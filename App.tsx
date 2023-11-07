@@ -4,6 +4,7 @@ import {
   Linking,
   NativeModules,
   StyleSheet,
+  Text,
   View,
 } from 'react-native';
 import React, {useCallback} from 'react';
@@ -24,9 +25,16 @@ const SendIntentButton = ({
   extras,
   children,
 }: SendIntentButtonProps) => {
+  const [habitName, setHabitName] = React.useState<string>('???');
+  const [habitId, setHabitId] = React.useState<string>('???');
+  const [actionId, setActionId] = React.useState<string>('???');
   const handlePress = useCallback(async () => {
     try {
-      await LoopHabitModule.openHabitSelector();
+      const details = await LoopHabitModule.openHabitSelector();
+      setHabitName(details.blurb);
+      setHabitId(details.habit);
+      setActionId(details.action);
+      console.log(JSON.stringify(details));
       // await Linking.sendIntent(action, extras);
     } catch (e: any) {
       Alert.alert(e.message);
@@ -34,7 +42,24 @@ const SendIntentButton = ({
     }
   }, [action, extras]);
 
-  return <Button title={children} onPress={handlePress} />;
+  const handleHabitAction = useCallback(async () => {
+    try {
+      await LoopHabitModule.takeHabitAction(habitId, actionId);
+    } catch (e: any) {
+      Alert.alert(e.message);
+      console.log(JSON.stringify(e));
+    }
+  }, [habitId, actionId]);
+
+  return (
+    <>
+      <Button title={children} onPress={handlePress} />
+      <Text>{`Habit Name: ${habitName}`}</Text>
+      <Text>{`Habit ID: ${habitId}`}</Text>
+      <Text>{`Action ID: ${actionId}`}</Text>
+      <Button title={"Carry out Habit Action"} onPress={handleHabitAction} />
+    </>
+  );
 };
 
 const App = () => {
