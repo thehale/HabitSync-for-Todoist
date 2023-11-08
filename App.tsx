@@ -7,7 +7,7 @@ import { TokenManagement } from './src/ui/TokenManagement';
 export default function App() {
   return (
     <PaperProvider>
-      <SafeAreaView>
+      <SafeAreaView style={{flex: 1}}>
         <TokenManagement />
         <HabitList />
       </SafeAreaView>

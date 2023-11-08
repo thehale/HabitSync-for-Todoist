@@ -66,13 +66,15 @@ function HabitList() {
   const tasks = useTodoistTasks(token);
   console.debug(new Date(), tasks.length);
   return (
-    <FlatList
-      data={tasks}
-      renderItem={({item}) => <Habit item={item} />}
-      contentContainerStyle={{gap: 8, padding: 8}}
-      ItemSeparatorComponent={Divider}
-      keyExtractor={item => item.id}
-    />
+    <View style={{flex: 1}}>
+      <FlatList
+        data={tasks}
+        renderItem={({item}) => <Habit item={item} />}
+        ItemSeparatorComponent={Divider}
+        keyExtractor={item => item.id}
+        contentContainerStyle={{gap: 8, padding: 8}}
+      />
+    </View>
   );
 }
 
