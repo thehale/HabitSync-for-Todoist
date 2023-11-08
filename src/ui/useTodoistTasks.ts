@@ -24,7 +24,11 @@ async function queryTasks(apiToken: string, since: Date): Promise<TodoistTask[]>
       },
     },
   );
-  return (await tasks.json())['items'] as TodoistTask[];
+  const json = await tasks.json();
+  if (json['error']) {
+    throw new Error(JSON.stringify(json));
+  }
+  return json['items'] as TodoistTask[];
 }
 
 function defaultSinceDate(): Date {

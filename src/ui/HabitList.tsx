@@ -1,14 +1,9 @@
-import {
-  Alert,
-  FlatList,
-  NativeModules,
-  SafeAreaView,
-  StyleSheet,
-} from 'react-native';
+import {Alert, FlatList, NativeModules, View} from 'react-native';
 import {Button, Card, Divider, Text} from 'react-native-paper';
 import {LoopHabit, PersistentTask} from './types';
 import {useCallback, useState} from 'react';
 
+import {useApiKey} from './useStorage';
 import {useTodoistTasks} from './useTodoistTasks';
 
 const {LoopHabitModule} = NativeModules;
@@ -67,25 +62,18 @@ function Habit({item}: HabitProps) {
 }
 
 function HabitList() {
-  const tasks = useTodoistTasks(TODOIST_API_TOKEN);
+  const [token] = useApiKey();
+  const tasks = useTodoistTasks(token);
+  console.debug(new Date(), tasks.length);
   return (
-    <SafeAreaView style={styles.container}>
-      <FlatList
-        data={tasks}
-        renderItem={({item}) => <Habit item={item} />}
-        contentContainerStyle={{gap: 8, width: '100%'}}
-        ItemSeparatorComponent={Divider}
-        keyExtractor={item => item.id}
-      />
-    </SafeAreaView>
+    <FlatList
+      data={tasks}
+      renderItem={({item}) => <Habit item={item} />}
+      contentContainerStyle={{gap: 8, padding: 8}}
+      ItemSeparatorComponent={Divider}
+      keyExtractor={item => item.id}
+    />
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 8,
-  },
-});
 
 export default HabitList;
