@@ -5,7 +5,7 @@ import {
   SafeAreaView,
   StyleSheet,
 } from 'react-native';
-import {Button, Card, Divider} from 'react-native-paper';
+import {Button, Card, Divider, Text} from 'react-native-paper';
 import {LoopHabit, PersistentTask} from './types';
 import {useCallback, useState} from 'react';
 
@@ -50,10 +50,10 @@ function Habit({item}: HabitProps) {
   }, [habit]);
   return (
     <Card>
-      <Card.Title
-        title={item.title}
-        subtitle={habit ? habit.name : 'No matching Habit'}
-      />
+      <Card.Title title={item.title} subtitle={`id: ${item.objectId}`} />
+      <Card.Content>
+        <Text>{habit ? habit.name : 'No matching Habit'}</Text>
+      </Card.Content>
       <Card.Actions>
         {habit && <Button onPress={markHabit}>Mark Habit</Button>}
         {habit ? (

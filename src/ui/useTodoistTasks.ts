@@ -9,8 +9,6 @@ const MINUTES = SECONDS * 60;
 const HOURS = MINUTES * 60;
 const DAYS = HOURS * 24;
 
-
-
 async function queryTasks(apiToken: string, since: Date): Promise<TodoistTask[]> {
   let tasks = await fetch(
     'https://api.todoist.com/sync/v9/completed/get_all?' +
@@ -33,16 +31,17 @@ function defaultSinceDate(): Date {
   return new Date(Date.now() - 1 * DAYS);
 }
 
-
+let LAST_API_CALL = 0;
+let DURATION_BETWEEN_API_CALLS = 10 * SECONDS;
 
 export function useTodoistTasks(apiToken: string, since?: Date): PersistentTask[] {
-  // TODO handle re-querying tasks after persistence...
   let sinceDate = since || defaultSinceDate();
   const [tasks, setTasks] = useTasks();
   useEffect(() => {
-    if (tasks.length === 0) {
-      queryTasks(apiToken, sinceDate).then(tasks => {
-        const items = tasks
+    if (LAST_API_CALL + DURATION_BETWEEN_API_CALLS < Date.now()) {
+      queryTasks(apiToken, sinceDate).then(todoistTasks => {
+        const existingIds = new Set(tasks.map(t => t.objectId));
+        const items = todoistTasks
           .map(i => ({
             id: i.id,
             objectId: i?.item_object?.id,
@@ -50,8 +49,9 @@ export function useTodoistTasks(apiToken: string, since?: Date): PersistentTask[
             completedAt: new Date(i.completed_at),
             isRecurring: i?.item_object?.due?.is_recurring,
           }))
-          .filter(i => i.isRecurring);
-        setTasks(items);
+          .filter(i => i.isRecurring).filter(i => !existingIds.has(i.objectId));
+        const newItems = [...items, ...tasks].sort((a, b) => a.title.localeCompare(b.title));
+        setTasks(newItems);
       })
         .catch(error => console.error(error));
     }
