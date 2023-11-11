@@ -1,6 +1,9 @@
 import { Task, TodoistTask } from "../types";
 
 async function queryRawTasks(apiToken: string, since: Date): Promise<TodoistTask[]> {
+  if (!apiToken) {
+    return [] as TodoistTask[];
+  }
   let tasks = await fetch(
     'https://api.todoist.com/sync/v9/completed/get_all?' +
     new URLSearchParams({

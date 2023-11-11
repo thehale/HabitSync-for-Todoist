@@ -229,13 +229,25 @@ function HabitList() {
   console.debug(new Date(), tasks.length);
   return (
     <View style={{flex: 1}}>
-      <FlatList
-        data={tasks}
-        renderItem={({item}) => <Habit item={item} />}
-        ItemSeparatorComponent={Divider}
-        keyExtractor={item => item.id}
-        contentContainerStyle={{gap: 8, padding: 8}}
-      />
+      {tasks.length === 0 ? (
+        <View style={{flex: 1, justifyContent: 'center'}}>
+          <Text style={{textAlign: 'center'}}>
+            <Text>No recently completed recurring tasks found in Todoist.</Text>
+            <Text>{'\n\n'}</Text>
+            <Text>Make sure you've set your API token.</Text>
+            <Text>{'\n\n'}</Text>
+            <Text>Also, try closing and re-opening the app.</Text>
+          </Text>
+        </View>
+      ) : (
+        <FlatList
+          data={tasks}
+          renderItem={({item}) => <Habit item={item} />}
+          ItemSeparatorComponent={Divider}
+          keyExtractor={item => item.id}
+          contentContainerStyle={{gap: 8, padding: 8}}
+        />
+      )}
     </View>
   );
 }
