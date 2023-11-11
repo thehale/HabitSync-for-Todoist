@@ -7,7 +7,8 @@
     "ios": "react-native run-ios",
     "lint": "eslint .",
     "start": "react-native start",
-    "test": "jest"
+    "test": "jest",
+    "update-icon": "react-native-svg-app-icon"
   },
   "dependencies": {
     "react": "18.2.0",
@@ -31,6 +32,7 @@
     "jest": "^29.2.1",
     "metro-react-native-babel-preset": "0.76.8",
     "prettier": "^2.4.1",
+    "react-native-svg-app-icon": "^0.6.1",
     "react-test-renderer": "18.2.0",
     "typescript": "4.8.4"
   },
