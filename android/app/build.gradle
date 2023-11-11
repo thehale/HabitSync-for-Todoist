@@ -74,9 +74,9 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
-    namespace "com.todoisthabitsync"
+    namespace "dev.jhale.todoisthabitsync"
     defaultConfig {
-        applicationId "com.todoisthabitsync"
+        applicationId "dev.jhale.todoisthabitsync"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

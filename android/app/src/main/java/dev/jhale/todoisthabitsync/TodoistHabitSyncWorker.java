@@ -1,4 +1,4 @@
-package com.todoisthabitsync;
+package dev.jhale.todoisthabitsync;
 
 
 import android.content.Context;

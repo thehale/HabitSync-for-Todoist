@@ -22,7 +22,7 @@
         </intent-filter>
       </activity>
 
-      <service android:name="com.todoisthabitsync.TodoistHabitSyncService" />
+      <service android:name="dev.jhale.todoisthabitsync.TodoistHabitSyncService" />
 
     </application>
 </manifest>

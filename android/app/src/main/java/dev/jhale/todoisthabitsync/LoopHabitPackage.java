@@ -1,4 +1,4 @@
-package com.todoisthabitsync;
+package dev.jhale.todoisthabitsync;
 
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.NativeModule;
