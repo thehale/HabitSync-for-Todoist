@@ -18,7 +18,7 @@ export interface TodoistTask {
 }
 export interface Task {
   id: string;
-  objectId: string;
+  occurrenceId: string;
   title: string;
   completedAt: Date;
   isRecurring: boolean;

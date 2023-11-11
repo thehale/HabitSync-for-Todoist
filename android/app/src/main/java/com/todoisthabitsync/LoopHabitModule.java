@@ -6,6 +6,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
+import androidx.work.ExistingPeriodicWorkPolicy;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
+
 import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.BaseActivityEventListener;
@@ -16,8 +20,10 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.WritableMap;
+
 import java.util.Map;
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
 public class LoopHabitModule extends ReactContextBaseJavaModule {
 
@@ -54,6 +60,9 @@ public class LoopHabitModule extends ReactContextBaseJavaModule {
     LoopHabitModule(ReactApplicationContext context) {
         super(context);
         context.addActivityEventListener(listener);
+        Log.d("THabit", "Scheduling tasks every 15 minutes on WorkManager");
+        WorkManager.getInstance(context).enqueueUniquePeriodicWork("TodoistHabitSyncWork", ExistingPeriodicWorkPolicy.KEEP,
+                new PeriodicWorkRequest.Builder(TodoistHabitSyncWorker.class, 15, TimeUnit.MINUTES).build());
     }
 
     public String getName() {

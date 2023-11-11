@@ -1,9 +1,8 @@
 import {Alert, FlatList, NativeModules, View} from 'react-native';
 import {Button, Card, Divider, Text} from 'react-native-paper';
-import {LoopHabit, PersistentTask} from './types';
+import {LoopHabit, PersistentTask} from '../types';
 import {useCallback, useState} from 'react';
 
-import {useApiKey} from './useStorage';
 import {useTodoistTasks} from './useTodoistTasks';
 
 const {LoopHabitModule} = NativeModules;
@@ -45,7 +44,7 @@ function Habit({item}: HabitProps) {
   }, [habit]);
   return (
     <Card>
-      <Card.Title title={item.title} subtitle={`id: ${item.objectId}`} />
+      <Card.Title title={item.title} subtitle={`id: ${item.id}`} />
       <Card.Content>
         <Text>{habit ? habit.name : 'No matching Habit'}</Text>
       </Card.Content>
@@ -62,8 +61,7 @@ function Habit({item}: HabitProps) {
 }
 
 function HabitList() {
-  const [token] = useApiKey();
-  const tasks = useTodoistTasks(token);
+  const tasks = useTodoistTasks();
   console.debug(new Date(), tasks.length);
   return (
     <View style={{flex: 1}}>
