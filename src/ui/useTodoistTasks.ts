@@ -25,7 +25,8 @@ export function useTodoistTasks(since?: Date): PersistentTask[] {
   const buffer = Math.floor(new Date().getTime() / DURATION_BETWEEN_API_CALLS);
 
   useEffect(() => {
-    if (LAST_API_CALL + DURATION_BETWEEN_API_CALLS < Date.now()) {
+    let timeToRefresh = LAST_API_CALL + DURATION_BETWEEN_API_CALLS < Date.now();
+    if (apiToken && timeToRefresh) {
       queryTasks(apiToken, sinceDate).then(res => {
         const existingIds = new Set(tasks.map(t => t.id));
         const items = res.filter(i => !existingIds.has(i.id));
@@ -47,5 +48,9 @@ export function useTodoistTasks(since?: Date): PersistentTask[] {
       });
       setTasks(newTasks);
     },
+    delete: () => {
+      const newTasks = tasks.filter(task => task.occurrenceId !== t.occurrenceId);
+      setTasks(newTasks);
+    }
   }));
 }

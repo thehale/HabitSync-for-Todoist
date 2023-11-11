@@ -1,20 +1,19 @@
-import {Button, PaperProvider, Text} from 'react-native-paper';
+import {Divider, PaperProvider} from 'react-native-paper';
 
 import HabitList from './src/ui/HabitList';
+import ManualSync from './src/ui/ManualSync';
 import React from 'react';
 import { SafeAreaView } from 'react-native';
 import { TokenManagement } from './src/ui/TokenManagement';
-import { useStorage } from './src/ui/useStorage';
-
-const runSync = require('./src/tasks/TodoistHabitSync');
 
 export default function App() {
   return (
     <PaperProvider>
       <SafeAreaView style={{flex: 1}}>
-        <Button onPress={runSync}>Manual Sync</Button>
-        <TokenManagement />
         <HabitList />
+        <TokenManagement />
+        <Divider />
+        <ManualSync />
       </SafeAreaView>
     </PaperProvider>
   );

@@ -26,4 +26,5 @@ export interface Task {
 }
 export interface PersistentTask extends Task {
   setHabit: (habit?: LoopHabit) => void;
+  delete: () => void;
 }
