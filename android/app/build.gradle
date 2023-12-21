@@ -1,5 +1,7 @@
 apply plugin: "com.android.application"
 apply plugin: "com.facebook.react"
+apply from: './versionCode.gradle'
+apply from: './versionName.gradle'
 apply from: file("../../node_modules/react-native-vector-icons/fonts.gradle")
 
 /**
@@ -79,8 +81,8 @@ android {
         applicationId "dev.jhale.todoisthabitsync"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode Integer.parseInt(VERSION_CODE)
+        versionName VERSION_NAME
     }
     signingConfigs {
         debug {
@@ -88,6 +90,15 @@ android {
             storePassword 'android'
             keyAlias 'androiddebugkey'
             keyPassword 'android'
+        }
+        release {
+            def keystorePath = System.getenv("ANDROID_RELEASE_KEYSTORE_FILE_PATH")
+            if (keystorePath != null && keystorePath.length() > 0) {
+                storeFile file(System.getenv("ANDROID_RELEASE_KEYSTORE_FILE_PATH"))
+                storePassword System.getenv("ANDROID_RELEASE_KEYSTORE_PASSWORD")
+                keyAlias System.getenv("ANDROID_RELEASE_KEY_ALIAS")
+                keyPassword System.getenv("ANDROID_RELEASE_KEY_PASSWORD")
+            }
         }
     }
     buildTypes {
@@ -97,7 +108,7 @@ android {
         release {
             // Caution! In production, you need to generate your own keystore file.
             // see https://reactnative.dev/docs/signed-apk-android.
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }

@@ -1,0 +1,101 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+default_platform(:android)
+
+desc "Make sure to copy the `.env.dist` to `.env` and fill all values before running any lanes"
+
+platform :ios do
+  before_all do
+    ENV["NO_FLIPPER"] = "1"  # Disable Flipper in Release builds
+  end
+  
+  desc 'Fetch certificates and provisioning profiles'
+  lane :certificates do
+    match(type: 'development', keychain_password: ENV['MATCH_PASSWORD'])
+    match(type: 'appstore', keychain_password: ENV['MATCH_PASSWORD'])
+  end
+
+  desc 'Build the iOS application.'
+  lane :build do
+    # certificates
+
+    require "json"
+    package_json = JSON.parse(File.read("../package.json"))
+    increment_version_number_in_xcodeproj(
+      version_number: package_json["version"],
+      xcodeproj: "ios/TodoistHabitSync.xcodeproj"
+    )
+    increment_build_number_in_xcodeproj(
+      xcodeproj: "ios/TodoistHabitSync.xcodeproj"
+    )
+
+    gym
+
+    echo(message: "----------------------------------------------------------")
+    echo(message: "HELP: If the build FAILED, make sure to...")
+    echo(message: "  (1) run `fastlane ios certificates`, AND")
+    echo(message: "  (2) unlock the keychain with `security unlock-keychain`.")
+    echo(message: "----------------------------------------------------------")
+  end
+
+  desc "Publish a beta release to the App Store"
+  lane :beta do
+    build
+    app_store_connect_api_key(
+      key_id: ENV["IOS_APP_STORE_CONNECT_KEY_ID"],
+      issuer_id: ENV["IOS_APP_STORE_CONNECT_ISSUER_ID"],
+      key_filepath: ENV["IOS_APP_STORE_CONNECT_KEY_FILE_PATH"],
+    )
+    pilot
+  end
+
+end
+
+platform :android do
+
+  desc "Build the Android application."
+  lane :build do
+    gradle(task: 'clean', project_dir: 'android/')
+    gradle(task: 'incrementVersionCode', project_dir: 'android/')
+    gradle(task: 'syncVersionNameFromPackageJson', project_dir: 'android/')
+    gradle(task: 'bundle', build_type: 'Release', project_dir: 'android/')
+  end
+
+  desc "Publish an internal release to the Play Store"
+  lane :internal do
+    build
+    supply(track: 'internal', track_promote_to: 'internal', release_status: 'draft')
+  end
+
+  desc "Publish a alpha release to the Play Store"
+  lane :alpha do
+    build
+    supply(track: 'alpha', track_promote_to: 'alpha')
+  end
+
+  desc "Publish a beta release to the Play Store"
+  lane :beta do
+    build
+    supply(track: 'beta', track_promote_to: 'beta')
+  end
+
+  desc "Publish a production release to the Play Store"
+  lane :production do
+    build
+    supply(track: 'production', track_promote_to: 'production')
+  end
+
+end
