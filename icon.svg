@@ -9,7 +9,7 @@
    id="svg1"
    xml:space="preserve"
    inkscape:version="1.3 (0e150ed6c4, 2023-07-21)"
-   sodipodi:docname="logo.svg"
+   sodipodi:docname="icon.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
@@ -23,11 +23,11 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
-     inkscape:zoom="0.35355339"
-     inkscape:cx="-66.468037"
-     inkscape:cy="233.34524"
+     inkscape:zoom="2.8284271"
+     inkscape:cx="42.426407"
+     inkscape:cy="97.757513"
      inkscape:window-width="1920"
-     inkscape:window-height="1009"
+     inkscape:window-height="1057"
      inkscape:window-x="-8"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
@@ -42,7 +42,7 @@
        id="path19"
        style="fill:#1a1a1a;stroke-width:0.529167" /><g
        id="g21"
-       transform="matrix(1.0561892,0,0,1.0561892,33.148086,-24.863417)"><path
+       transform="matrix(0.81296638,0,0,0.81296638,-110.33812,82.761417)"><path
          id="path17"
          style="fill:#00ff00;fill-opacity:1;stroke-width:0.855465"
          d="m -602.68099,468.77071 c -3.87187,-0.9946 -7.43209,-3.06242 -10.34144,-6.09221 -5.88797,-6.13172 -7.53595,-15.14251 -4.25452,-23.26415 0.65067,-1.61042 3.35489,-5.84447 3.85533,-6.03652 0.19315,-0.0741 1.514,1.0951 3.44994,3.0543 3.50141,3.54351 4.01352,3.82585 5.58914,3.07816 1.73323,-0.82246 1.69139,-0.52237 1.69226,-12.04652 8.6e-4,-11.16513 0.0111,-11.07021 -1.28909,-11.95147 -0.59976,-0.40652 -1.19131,-0.4297 -10.9546,-0.4297 -11.32746,0 -11.12024,-0.024 -11.98196,1.37043 -0.54189,0.8768 -0.57301,2.07002 -0.0738,2.82309 0.204,0.3078 1.592,1.79613 3.08434,3.30759 l 2.71345,2.74837 -1.20022,1.43895 c -4.68034,5.61217 -7.33761,12.54297 -7.62401,19.88627 -0.1371,3.51509 0.12895,5.93004 1.05477,9.58239 2.6301,10.37549 11.00815,19.27689 21.31328,22.64435 1.55957,0.50963 3.36845,0.96921 4.96715,1.28113 z" /><path
