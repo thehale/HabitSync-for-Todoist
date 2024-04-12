@@ -1,1 +1,1 @@
-Todoist Habit Sync
+Habit Sync for Todoist

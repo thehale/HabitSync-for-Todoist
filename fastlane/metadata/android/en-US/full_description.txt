@@ -1,8 +1,12 @@
 Todoist is an excellent task tracking app, but has poor habit tracking capabilities. Loop Habit Tracker is an excellent habit tracking app, but has no task tracking capabilities.
 
-Enter Todoist Habit Sync which automatically marks off habits in Loop Habit Tracker when you complete a recurring task in Todoist. Now you have the best of both worlds!
+Enter Habit Sync for Todoist which automatically marks off habits in Loop Habit Tracker when you complete a recurring task in Todoist. Now you have the best of both worlds!
 
 Here's how:
 1. Open the app
 2. Link your Todoist tasks to Loop Habits
 3. Done! 🎉
+
+Habit Sync for Todoist respects your privacy. All data related to your habits and tasks are stored locally on your device and are never shared with any third party.
+
+DISCLAIMER: Habit Sync for Todoist is not created by, affiliated with, or supported by Doist (the creators of Todoist) or the Loop Habit Tracker app or its creators.
