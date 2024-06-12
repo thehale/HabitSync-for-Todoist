@@ -11,6 +11,8 @@ Keeping track of your habits has never been easier
 [![Joseph Hale's software engineering blog](https://jhale.dev/badges/website.svg)](https://jhale.dev)
 [![Follow Joseph Hale!](https://jhale.dev/badges/follow.svg)](https://www.linkedin.com/comm/mynetwork/discovery-see-all?usecase=PEOPLE_FOLLOWS&followMember=thehale)
 
+[![Habit Sync for Todoist on the Google Play Store](docs/get_it_on_google_play.svg)](https://play.google.com/store/apps/details?id=dev.jhale.todoisthabitsync)
+
 </div>
 
 
