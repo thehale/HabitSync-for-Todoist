@@ -6,7 +6,7 @@ the right.](icon.svg)
 
 Keeping track of your habits has never been easier
 
-[![](https://badgen.net/github/license/thehale/docker-python-poetry)](https://github.com/thehale/docker-python-poetry/blob/master/LICENSE)
+[![](https://badgen.net/github/license/thehale/HabitSync-for-Todoist)](https://github.com/thehale/HabitSync-for-Todoist/blob/master/LICENSE)
 [![](https://badgen.net/badge/icon/Sponsor/pink?icon=github&label)](https://github.com/sponsors/thehale)
 [![Joseph Hale's software engineering blog](https://jhale.dev/badges/website.svg)](https://jhale.dev)
 [![Follow Joseph Hale!](https://jhale.dev/badges/follow.svg)](https://www.linkedin.com/comm/mynetwork/discovery-see-all?usecase=PEOPLE_FOLLOWS&followMember=thehale)
