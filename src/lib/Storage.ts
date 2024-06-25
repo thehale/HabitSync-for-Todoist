@@ -13,6 +13,7 @@ const _storage = {
 
 const API_KEY_STORAGE_ID = 'todoist.apiKey'
 const TASKS_STORAGE_ID = 'todoist.tasks'
+const LAST_SYNC_DATE_STORAGE_ID = 'todoist.lastSync'
 
 
 export const Storage = {
@@ -28,5 +29,13 @@ export const Storage = {
     },
     write: (tasks: Task[]) =>
       _storage.write(TASKS_STORAGE_ID, JSON.stringify(tasks))
+  },
+  LastSync: {
+    read: (): Date => {
+      const date = _storage.read(LAST_SYNC_DATE_STORAGE_ID)
+      return date ? new Date(JSON.parse(date)) : new Date("1970-01-01")
+    },
+    write: (date: Date) => 
+      _storage.write(LAST_SYNC_DATE_STORAGE_ID, JSON.stringify(date))
   }
 }
