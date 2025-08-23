@@ -11,6 +11,7 @@
     "update-icon": "react-native-svg-app-icon"
   },
   "dependencies": {
+    "@ungap/structured-clone": "^1.3.0",
     "react": "18.2.0",
     "react-native": "0.72.6",
     "react-native-mmkv": "^2.10.2",
@@ -26,6 +27,7 @@
     "@tsconfig/react-native": "^3.0.0",
     "@types/react": "^18.0.24",
     "@types/react-test-renderer": "^18.0.0",
+    "@types/ungap__structured-clone": "^1.2.0",
     "babel-jest": "^29.2.1",
     "babel-plugin-module-resolver": "^5.0.2",
     "eslint": "^8.19.0",
