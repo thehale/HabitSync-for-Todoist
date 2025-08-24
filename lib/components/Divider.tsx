@@ -16,6 +16,6 @@ export default function Divider() {
 const styles = StyleSheet.create({
 	container: {
 		width: "100%",
-		height: 2,
+		height: 1,
 	},
 });
