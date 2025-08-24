@@ -20,22 +20,17 @@ interface TextInputProps {
 export default function TextInput(props: TextInputProps) {
 	const { theme } = useTheme();
 	return (
-		<View style={styles.container}>
+		<View style={[styles.container, { backgroundColor: theme.colors.secondaryContainer, borderColor: theme.colors.primary }]}>
 			{props.before}
 			<NativeTextInput
-				style={[
-					styles.input, 
-					{ 
-						backgroundColor: theme.colors.secondaryContainer,
-						color: theme.colors.onSecondaryContainer
-					}
-				]}
+				style={[styles.input, { color: theme.colors.onSecondaryContainer }]}
 				placeholder={props.placeholder}
 				placeholderTextColor={theme.colors.backdrop}
 				value={props.value}
 				onChangeText={props.onChangeText}
 				autoCapitalize='none'
 				autoCorrect={false}
+				underlineColorAndroid={'transparent'}
 			/>
 			{props.after}
 		</View>
@@ -47,10 +42,13 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		justifyContent: 'space-between',
 		alignItems: 'center',
+		borderRadius: 8,
 		gap: 8,
+		paddingHorizontal: 8,
+		borderBottomWidth: 1,
 	},
 	input: {
-		flex: 1,
 		borderRadius: 8,
+		flex: 1,
 	},
 });
