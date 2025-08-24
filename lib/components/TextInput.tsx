@@ -6,6 +6,7 @@
 
 import { TextInput as NativeTextInput, StyleSheet, View } from "react-native";
 
+import Color from "color";
 import { useTheme } from "../theme/useTheme";
 
 interface TextInputProps {
@@ -24,8 +25,8 @@ export default function TextInput(props: TextInputProps) {
 			{props.before}
 			<NativeTextInput
 				style={[styles.input, { color: theme.colors.onSecondaryContainer }]}
-				placeholder={props.placeholder}
-				placeholderTextColor={theme.colors.backdrop}
+				placeholder={`${props.placeholder}...`}
+				placeholderTextColor={Color(theme.colors.onSecondaryContainer).fade(0.5).string()}
 				value={props.value}
 				onChangeText={props.onChangeText}
 				autoCapitalize='none'

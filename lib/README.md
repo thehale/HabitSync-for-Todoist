@@ -50,6 +50,7 @@ Dependencies:
 ```
 "@ungap/structured-clone": "^1.3.0",
 "lodash": "^4.17.21", // for `debounce`
+"color": "^5.0.0",
 ```
 
 Peer Dependencies:
