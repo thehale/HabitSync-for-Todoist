@@ -14,16 +14,18 @@ export function TokenManagement() {
   const [showClearDialog, setClearDialogVisible] = useState(false);
   return (
     <>
-      {token && <Button onPress={() => setClearDialogVisible(true)}>Clear API Token</Button>}
+      {token && <Button mode="outlined" intent="danger" onPress={() => setClearDialogVisible(true)}>Clear API Token</Button>}
       {!token && (
         <View style={{ gap: 10 }}>
-          <TextInput 
-            placeholder='Todoist API Token'
-            value={text}
-            onChangeText={setText}
-            after={<Button onPress={() => setHelpVisible(true)}> ? </Button>}
-          />
-          <Button onPress={() => { setToken(text); setText(''); }}>Set Token</Button>
+          <View style={{ marginLeft: 2 }}>
+            <TextInput
+              placeholder='Todoist API Token'
+              value={text}
+              onChangeText={setText}
+              after={<Button mode="tonal" onPress={() => setHelpVisible(true)}> ? </Button>}
+            />
+          </View>
+          <Button mode="contained" onPress={() => { setToken(text); setText(''); }}>Set Token</Button>
         </View>
       )}
       <HelpDialog visible={showHelp} onDismiss={() => setHelpVisible(false)} />
@@ -63,7 +65,7 @@ function HelpDialog({ visible, onDismiss }: HelpDialogProps) {
       actions={
         <Dialog.Actions>
           <Button onPress={onDismiss}>Close</Button>
-          <Button onPress={() => { Linking.openURL('http://todoist.com/app/settings/integrations/developer'); onDismiss(); }}>Open Web Settings</Button>
+          <Button mode="contained" onPress={() => { Linking.openURL('http://todoist.com/app/settings/integrations/developer'); onDismiss(); }}>Open Web Settings</Button>
         </Dialog.Actions>
       }
     />
@@ -84,10 +86,12 @@ function ClearTokenDialog({
     <Dialog visible={visible} onDismiss={onDismiss}
       title="Are you sure you want clear the API token?"
       content={"All syncs will stop until you set a new API token."}
-      actions={[
-        (<Button onPress={onDismiss}>Cancel</Button>),
-        (<Button onPress={() => { onAccept(); onDismiss(); }}>Clear</Button>),
-      ]}
+      actions={
+        <Dialog.Actions>
+          <Button onPress={onDismiss}>Cancel</Button>
+          <Button mode="contained" intent="danger" onPress={() => { onAccept(); onDismiss(); }}>Disable Syncs</Button>
+        </Dialog.Actions>
+      }
     />
   );
 }

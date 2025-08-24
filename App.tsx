@@ -1,17 +1,24 @@
+import { SafeAreaView, View } from 'react-native';
+
 import Divider from '@components/Divider';
 import HabitList from './src/ui/HabitList';
 import ManualSync from './src/ui/ManualSync';
 import React from 'react';
-import { SafeAreaView } from 'react-native';
 import { TokenManagement } from './src/ui/TokenManagement';
+import { useTheme } from './lib/theme/useTheme';
 
 export default function App() {
+  const { theme } = useTheme();
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.background }}>
       <HabitList />
-      <TokenManagement />
+      <View style={{ marginHorizontal: 8 }}>
+        <TokenManagement />
+      </View>
       <Divider />
-      <ManualSync />
+      <View style={{ marginHorizontal: 8 }}>
+        <ManualSync />
+      </View>
     </SafeAreaView>
   );
 }

@@ -56,10 +56,10 @@ function Habit({ item }: HabitProps) {
         content={`Todoist ID: ${item.id}\nLoop Habit: ${habit ? habit.name : 'Nothing'}`}
         actions={
           <Card.Actions>
-            <Button onPress={() => setDeleteDialogVisible(true)}>Delete</Button>
-            {habit && (<Button onPress={() => setUnlinkDialogVisible(true)}>Unlink Habit</Button>)}
-            {habit && (<Button onPress={() => setMarkHabitDialogVisible(true)}>Test Run</Button>)}
-            {!habit && (<Button onPress={linkHabit}>Link Habit</Button>)}
+            <Button mode="tonal" intent="danger" onPress={() => setDeleteDialogVisible(true)}>Delete</Button>
+            {habit && (<Button mode="tonal" intent="danger" onPress={() => setUnlinkDialogVisible(true)}>Unlink Habit</Button>)}
+            {habit && (<Button mode="tonal" onPress={() => setMarkHabitDialogVisible(true)}>Test Run</Button>)}
+            {!habit && (<Button mode="contained" onPress={linkHabit}>Link Habit</Button>)}
           </Card.Actions>
         }
       />
@@ -91,16 +91,11 @@ function DeleteDialog({ visible, onAccept, onDismiss }: DeleteDialogProps) {
   return (
     <Dialog visible={visible} onDismiss={onDismiss}
       title="Are you sure you want to delete this task?"
-      content={
-        <Text>
-          If you only want to stop marking the habit when the task is
-          complete, unlink the habit instead.
-        </Text>
-      }
+      content="If you only want to stop marking the habit when the task is complete, unlink the habit instead."
       actions={
         <Dialog.Actions>
           <Button onPress={onDismiss}>Cancel</Button>
-          <Button onPress={() => { onAccept(); onDismiss(); }}>Delete</Button>
+          <Button mode="contained" intent="danger" onPress={() => { onAccept(); onDismiss(); }}>Delete</Button>
         </Dialog.Actions>
       }
     />
@@ -120,12 +115,7 @@ function UnlinkHabitDialog({
   return (
     <Dialog visible={visible} onDismiss={onDismiss}
       title="Are you sure you want to unlink this task?"
-      content={
-        <Text>
-          Completing this task in Todoist will no longer update the linked
-          habit in Loop Habit Tracker.
-        </Text>
-      }
+      content="Completing this task in Todoist will no longer update the linked habit in Loop Habit Tracker."
       actions={
         <Dialog.Actions>
           <Button onPress={onDismiss}>Cancel</Button>
@@ -181,7 +171,6 @@ function HabitList() {
         <FlatList
           data={tasks}
           renderItem={({ item }) => <Habit item={item} />}
-          ItemSeparatorComponent={Divider}
           keyExtractor={item => item.id}
           contentContainerStyle={{ gap: 8, padding: 8 }}
         />

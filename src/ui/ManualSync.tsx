@@ -11,7 +11,7 @@ export default function ManualSync() {
   const [showDialog, setDialogVisible] = useState(false);
   return (
     <View>
-      <Button onPress={() => setDialogVisible(true)}>Run a Habit Sync</Button>
+      <Button mode="tonal" onPress={() => setDialogVisible(true)}>Run a Habit Sync</Button>
       <SyncDialog
         visible={showDialog}
         onDismiss={() => setDialogVisible(false)}
@@ -43,7 +43,7 @@ function SyncDialog({ visible, onDismiss }: SyncDialogProps) {
       actions={
         <Dialog.Actions>
           <Button onPress={onDismiss}>Cancel</Button>
-          <Button onPress={() => { runSync(); onDismiss(); }}>Run Sync</Button>
+          <Button mode="contained" onPress={() => { runSync(); onDismiss(); }}>Run Sync</Button>
         </Dialog.Actions>
       }
     />
