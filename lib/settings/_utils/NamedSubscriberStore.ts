@@ -6,12 +6,10 @@
 
 import structuredClone from '@ungap/structured-clone';
 
-class AlreadySubscribedError extends Error { }
-
 export class NamedSubscriberStore<State extends Record<string, any>> {
 	state: State
 	validKeys: Set<keyof State>
-	listeners = new Map()
+	listeners = new Map<string, Array<Function>>()
 	snapshot: State | null = null
 
 	constructor(defaultState: State) {
@@ -19,13 +17,19 @@ export class NamedSubscriberStore<State extends Record<string, any>> {
 		this.validKeys = new Set(Object.keys(defaultState))
 	}
 
-	subscribe(name: string, callback: Function) {
-		if (this.listeners.has(name) && this.listeners.get(name) !== callback) {
-			throw new AlreadySubscribedError()
-		} else {
-			this.listeners.set(name, callback)
+	subscribe(callback: Function, name: string = "unknown") {
+		const namedListeners = this.listeners.get(name) ?? []
+		namedListeners.push(callback)
+		this.listeners.set(name, namedListeners)
+
+		const unsubscribe = () => {
+			const namedListeners = this.listeners.get(name) ?? []
+			const index = namedListeners.indexOf(callback)
+			if (index !== -1) {
+				namedListeners.splice(index, 1)
+				this.listeners.set(name, namedListeners)
+			}
 		}
-		const unsubscribe = () => this.listeners.delete(name)
 		return unsubscribe
 	}
 
@@ -40,7 +44,7 @@ export class NamedSubscriberStore<State extends Record<string, any>> {
 		}
 		if (changed) {
 			this.snapshot = null // Invalidate snapshot to ensure fresh data on next getSnapshot
-			this.listeners.forEach((notify) => notify())
+			this.listeners.forEach(batch => batch.forEach(notify => notify()))
 		}
 	}
 
