@@ -6,14 +6,16 @@
 
 import { StyleSheet, View } from "react-native";
 
+import { useTheme } from "../theme/useTheme";
+
 export default function Divider() {
-	return <View style={styles.container} />;
+	const { theme } = useTheme();
+	return <View style={[styles.container, { backgroundColor: theme.colors.outline }]} />;
 }
 
 const styles = StyleSheet.create({
 	container: {
 		width: "100%",
 		height: 2,
-		backgroundColor: "gray",
 	},
 });

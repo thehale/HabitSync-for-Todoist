@@ -8,6 +8,7 @@ import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import Text, { TextProps } from "@components/Text";
 
 import React from "react";
+import { useTheme } from "../theme/useTheme";
 
 export interface CardProps {
 	title?: string | React.ReactNode;
@@ -17,8 +18,15 @@ export interface CardProps {
 }
 
 export default function Card(props: CardProps) {
+	const { theme } = useTheme();
+	const colors: ViewStyle = {
+		backgroundColor: theme.colors.surface,
+		borderColor: theme.colors.outlineVariant,
+		borderWidth: 1,
+		elevation: 5,
+	}
 	return (
-		<View style={styles.container}>
+		<View style={[styles.container, colors]}>
 			<Title>{props.title}</Title>
 			<Subtitle>{props.subtitle}</Subtitle>
 			<Content>{props.content}</Content>
@@ -60,9 +68,7 @@ const styles = StyleSheet.create({
 	container: {
 		width: '100%',
 		padding: 16,
-		backgroundColor: 'gray',
 		borderRadius: 8,
-		shadowColor: '#000',
 		shadowOffset: {
 			width: 0,
 			height: 2

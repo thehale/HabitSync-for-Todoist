@@ -8,7 +8,7 @@ import createSettings from "../settings/createSettings";
 import type { Settings, Setting } from "../settings/types";
 import KeyValueStore from "../stores/KeyValueStore";
 import Green from "./Green";
-import { Theme } from "./types";
+import { ThemeDefinition, Theme } from "./types";
 import { useColorScheme } from "react-native";
 
 const themeStore = new KeyValueStore()
@@ -18,14 +18,16 @@ const DEFAULT_THEME = Green;
 const stringifiedDefaultTheme = JSON.stringify(DEFAULT_THEME);
 
 type ColorScheme = "light" | "dark" | "system"
+const DEFAULT_COLOR_SCHEME = "system"
+const DEFAULT_SYSTEM_COLOR_SCHEME = "light"
 
 const definitions = {
 	theme: {
 		default: DEFAULT_THEME,
-		validate: (_value: Theme) => true, // If it passes TypeScript, it's valid
-		update: async (value: Theme) => await themeStore.put(keys.theme, JSON.stringify(value)),
-		read: async () => JSON.parse(await themeStore.read(keys.theme, stringifiedDefaultTheme)) as Theme,
-	} satisfies Setting<Theme>,
+		validate: (_value: ThemeDefinition) => true, // If it passes TypeScript, it's valid
+		update: async (value: ThemeDefinition) => await themeStore.put(keys.theme, JSON.stringify(value)),
+		read: async () => JSON.parse(await themeStore.read(keys.theme, stringifiedDefaultTheme)) as ThemeDefinition,
+	} satisfies Setting<ThemeDefinition>,
 	scheme: {
 		default: "system" as ColorScheme,
 		validate: (value: ColorScheme) => ["light", "dark", "system"].includes(value),
@@ -36,7 +38,7 @@ const definitions = {
 
 const { useSettings } = createSettings(definitions)
 
-function initTheme(theme: Theme, scheme: ColorScheme) {
+function initTheme(theme: ThemeDefinition, scheme: ColorScheme) {
 	themeStore.put(keys.theme, JSON.stringify(theme));
 	themeStore.put(keys.scheme, scheme);
 }
@@ -45,14 +47,14 @@ function useTheme() {
 	const [settings, updateSettings] = useSettings('useTheme');
 	const colorScheme = useColorScheme();
 
-	const scheme = settings.scheme === "system" ? colorScheme ?? "light" : settings.scheme;
+	const scheme = settings.scheme === "system" ? colorScheme ?? DEFAULT_SYSTEM_COLOR_SCHEME : settings.scheme;
 	const theme = scheme === "dark" ? settings.theme.dark : settings.theme.light;
 
 	return {
-		theme: { fonts: settings.theme.fonts, colors: theme },
-		setTheme: (theme: Theme) => updateSettings({ theme }),
+		theme: { fonts: settings.theme.fonts, colors: theme } as Theme,
+		setTheme: (theme: ThemeDefinition) => updateSettings({ theme }),
 		setScheme: (scheme: ColorScheme) => updateSettings({ scheme }),
-		resetTheme: () => updateSettings({ theme: DEFAULT_THEME, scheme: "system" }),
+		resetTheme: () => updateSettings({ theme: DEFAULT_THEME, scheme: DEFAULT_COLOR_SCHEME }),
 	}
 }
 

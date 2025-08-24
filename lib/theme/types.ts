@@ -9,6 +9,11 @@
 
 export type Theme = {
   fonts: ThemeFonts;
+  colors: ThemeColors;
+}
+
+export type ThemeDefinition = {
+  fonts: ThemeFonts;
   dark: ThemeColors;
   light: ThemeColors;
 };

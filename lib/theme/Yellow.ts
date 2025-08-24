@@ -7,7 +7,7 @@
 // This theme comes from the React Native Paper demonstration app. Used under the terms of the MIT license.
 // Source: https://github.com/callstack/react-native-paper/blob/ac3820a50fe1afb82c19cc0853a451e5c190b769/example/utils/index.ts
 
-import type { Theme, ThemeColors } from "./types";
+import type { ThemeColors, ThemeDefinition } from "./types";
 
 import DefaultFonts from "./DefaultFonts";
 
@@ -97,7 +97,7 @@ const DarkYellow: ThemeColors = {
 	backdrop: 'rgba(49, 49, 37, 0.4)',
 }
 
-const Yellow: Theme = {
+const Yellow: ThemeDefinition = {
 	fonts: DefaultFonts,
 	light: LightYellow,
 	dark: DarkYellow,

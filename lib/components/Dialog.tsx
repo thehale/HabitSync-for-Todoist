@@ -7,12 +7,15 @@
 import Card, { CardProps } from "./Card";
 import { Modal, Pressable, StyleSheet, View } from "react-native";
 
+import { useTheme } from "../theme/useTheme";
+
 export interface DialogProps extends CardProps {
 	visible: boolean;
 	onDismiss: () => void;
 }
 
 export default function Dialog(props: DialogProps) {
+	const { theme } = useTheme()
 	return (
 		<Modal
 			visible={props.visible}
@@ -20,7 +23,7 @@ export default function Dialog(props: DialogProps) {
 			transparent={true}
 			onRequestClose={props.onDismiss}
 		>
-			<Pressable style={[styles.centered, styles.background]} onPress={props.onDismiss}>
+			<Pressable style={[styles.centered, { backgroundColor: theme.colors.backdrop }]} onPress={props.onDismiss}>
 				<View style={[styles.centered, styles.container]}>
 					<Card {...props} />
 				</View>

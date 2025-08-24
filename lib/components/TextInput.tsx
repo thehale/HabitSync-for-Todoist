@@ -6,6 +6,8 @@
 
 import { TextInput as NativeTextInput, StyleSheet, View } from "react-native";
 
+import { useTheme } from "../theme/useTheme";
+
 interface TextInputProps {
 	value: string;
 	onChangeText: (text: string) => void;
@@ -16,12 +18,20 @@ interface TextInputProps {
 
 
 export default function TextInput(props: TextInputProps) {
+	const { theme } = useTheme();
 	return (
 		<View style={styles.container}>
 			{props.before}
 			<NativeTextInput
-				style={styles.input}
+				style={[
+					styles.input, 
+					{ 
+						backgroundColor: theme.colors.secondaryContainer,
+						color: theme.colors.onSecondaryContainer
+					}
+				]}
 				placeholder={props.placeholder}
+				placeholderTextColor={theme.colors.backdrop}
 				value={props.value}
 				onChangeText={props.onChangeText}
 				autoCapitalize='none'
@@ -40,7 +50,7 @@ const styles = StyleSheet.create({
 		gap: 8,
 	},
 	input: {
-		backgroundColor: "#f0f0f0",
 		flex: 1,
+		borderRadius: 8,
 	},
 });
