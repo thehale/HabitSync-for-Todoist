@@ -12,11 +12,11 @@ export default function App() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.background }}>
       <HabitList />
-      <View style={{ marginHorizontal: 8 }}>
+      <View style={{ margin: 8 }}>
         <TokenManagement />
       </View>
       <Divider />
-      <View style={{ marginHorizontal: 8 }}>
+      <View style={{ margin: 8 }}>
         <ManualSync />
       </View>
     </SafeAreaView>

@@ -17,7 +17,7 @@ export function TokenManagement() {
       {token && <Button mode="outlined" intent="danger" onPress={() => setClearDialogVisible(true)}>Clear API Token</Button>}
       {!token && (
         <View style={{ gap: 10 }}>
-          <View style={{ marginLeft: 2 }}>
+          <View style={{ marginHorizontal: 2 }}>
             <TextInput
               placeholder='Todoist API Token'
               value={text}
