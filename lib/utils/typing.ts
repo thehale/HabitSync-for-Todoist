@@ -4,4 +4,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+/**
+ * `Optional<Type, Union>` makes only the attributes in `Union` optional, as opposed to `Partial<Type>` which makes _all_ attributes of `Type` optional.
+ */
 export type Optional<T, K extends keyof T> = Pick<Partial<T>, K> & Omit<T, K>; // Source: https://stackoverflow.com/a/61108377/14765128
