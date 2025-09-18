@@ -158,7 +158,7 @@ function HabitList() {
   return (
     <View style={{ flex: 1 }}>
       {tasks.length === 0 ? (
-        <View style={{ flex: 1, justifyContent: 'center' }}>
+        <View style={{ flex: 1, justifyContent: 'center', marginHorizontal: "10%" }}>
           <Text>
             <Text>No recently completed recurring tasks found in Todoist.</Text>
             <Text>{'\n\n'}</Text>
