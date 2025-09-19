@@ -23,6 +23,6 @@
             <category android:name="android.intent.category.LAUNCHER" />
         </intent-filter>
       </activity>
-      <service android:name="dev.jhale.todoisthabitsync.TodoistHabitSyncService" />
+      <service android:name="dev.jhale.todoisthabitsync.TodoistHabitSyncService" android:foregroundServiceType="dataSync" />
     </application>
 </manifest>
