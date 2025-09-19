@@ -23,8 +23,10 @@ export interface Task {
   completedAt: Date;
   isRecurring: boolean;
   habit?: LoopHabit;
+  ignored?: boolean;
 }
 export interface PersistentTask extends Task {
   setHabit: (habit?: LoopHabit) => void;
   delete: () => void;
+  ignore: () => void;
 }

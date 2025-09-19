@@ -40,16 +40,15 @@ export function useTodoistTasks(since?: Date): PersistentTask[] {
   return tasks.map(t => ({
     ...t,
     setHabit: (habit?: LoopHabit) => {
-      const newTasks = tasks.map(task => {
-        if (task.occurrenceId === t.occurrenceId) {
-          return { ...task, habit };
-        }
-        return task;
-      });
+      const newTasks = tasks.map(task => task.occurrenceId === t.occurrenceId ? { ...task, habit, ignored: false } : task);
       setTasks(newTasks);
     },
     delete: () => {
       const newTasks = tasks.filter(task => task.occurrenceId !== t.occurrenceId);
+      setTasks(newTasks);
+    },
+    ignore: () => {
+      const newTasks = tasks.map(task => task.occurrenceId === t.occurrenceId ? { ...task, habit: undefined, ignored: true } : task);
       setTasks(newTasks);
     }
   }));

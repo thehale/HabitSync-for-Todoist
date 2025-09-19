@@ -5,7 +5,6 @@ import { useCallback, useState } from 'react';
 import Button from '@components/Button';
 import Card from '@components/Card';
 import Dialog from '@components/Dialog';
-import Divider from '@components/Divider';
 import Text from '@components/Text';
 import { useTodoistTasks } from './useTodoistTasks';
 
@@ -17,6 +16,7 @@ interface HabitProps {
 function Habit({ item }: HabitProps) {
   const [showMarkHabitDialog, setMarkHabitDialogVisible] = useState(false);
   const [showDeleteDialog, setDeleteDialogVisible] = useState(false);
+  const [showIgnoreDialog, setIgnoreDialogVisible] = useState(false);
   const [showUnlinkDialog, setUnlinkDialogVisible] = useState(false);
   const [habit, setHabit] = useState<LoopHabit | undefined>(item.habit);
   const unlinkHabit = () => {
@@ -49,14 +49,19 @@ function Habit({ item }: HabitProps) {
       console.log(JSON.stringify(e));
     }
   }, [habit]);
+  const content = [
+    `Todoist ID: ${item.id}`,
+    item.ignored ? 'IGNORED' : `Loop Habit: ${habit ? habit.name : 'Nothing'}`,
+  ].join('\n');
   return (
     <>
       <Card
         title={item.title}
-        content={`Todoist ID: ${item.id}\nLoop Habit: ${habit ? habit.name : 'Nothing'}`}
+        content={content}
         actions={
           <Card.Actions>
             <Button mode="text" intent="danger" onPress={() => setDeleteDialogVisible(true)}>Delete</Button>
+            {!item.ignored && !item.habit && <Button mode="text" onPress={() => setIgnoreDialogVisible(true)}>Ignore</Button>}
             {habit && (<Button mode="text" intent="danger" onPress={() => setUnlinkDialogVisible(true)}>Unlink Habit</Button>)}
             {habit && (<Button mode="tonal" onPress={() => setMarkHabitDialogVisible(true)}>Test Run</Button>)}
             {!habit && (<Button mode="contained" onPress={linkHabit}>Link Habit</Button>)}
@@ -67,6 +72,11 @@ function Habit({ item }: HabitProps) {
         visible={showDeleteDialog}
         onAccept={() => item.delete()}
         onDismiss={() => setDeleteDialogVisible(false)}
+      />
+      <IgnoreDialog
+        visible={showIgnoreDialog}
+        onAccept={() => item.ignore()}
+        onDismiss={() => setIgnoreDialogVisible(false)}
       />
       <UnlinkHabitDialog
         visible={showUnlinkDialog}
@@ -100,6 +110,25 @@ function DeleteDialog({ visible, onAccept, onDismiss }: DeleteDialogProps) {
       }
     />
 
+  );
+}
+interface IgnoreDialogProps {
+  visible: boolean;
+  onAccept: () => void;
+  onDismiss: () => void;
+}
+function IgnoreDialog({ visible, onAccept, onDismiss }: IgnoreDialogProps) {
+  return (
+    <Dialog visible={visible} onDismiss={onDismiss}
+      title="Ignore this task?"
+      content="The task will be at the bottom of the list if you change your mind."
+      actions={
+        <Dialog.Actions>
+          <Button onPress={onDismiss}>Cancel</Button>
+          <Button mode="contained" onPress={() => { onAccept(); onDismiss(); }}>Ignore</Button>
+        </Dialog.Actions>
+      }
+    />
   );
 }
 interface UnlinkHabitDialogProps {
