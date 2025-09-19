@@ -16,10 +16,12 @@ export function useApiKey() {
 }
 
 export function useTasks() {
-  const [tasks, setTasks] = useState<Task[]>(Storage.Tasks.read());
+  const dedupTasks = (tasks: Task[]) => Array.from(new Map(tasks.map(task => [task.id, task])).values());
+  const [tasks, setTasks] = useState<Task[]>(dedupTasks(Storage.Tasks.read()));
   const saveTasks = (tasks: Task[]) => {
-    Storage.Tasks.write(tasks);
-    setTasks(tasks);
+    const dedupedTasks = dedupTasks(tasks);
+    Storage.Tasks.write(dedupedTasks);
+    setTasks(dedupedTasks);
   }
   return [tasks, saveTasks] as const;
 }
