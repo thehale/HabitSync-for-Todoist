@@ -56,8 +56,8 @@ function Habit({ item }: HabitProps) {
         content={`Todoist ID: ${item.id}\nLoop Habit: ${habit ? habit.name : 'Nothing'}`}
         actions={
           <Card.Actions>
-            <Button mode="tonal" intent="danger" onPress={() => setDeleteDialogVisible(true)}>Delete</Button>
-            {habit && (<Button mode="tonal" intent="danger" onPress={() => setUnlinkDialogVisible(true)}>Unlink Habit</Button>)}
+            <Button mode="text" intent="danger" onPress={() => setDeleteDialogVisible(true)}>Delete</Button>
+            {habit && (<Button mode="text" intent="danger" onPress={() => setUnlinkDialogVisible(true)}>Unlink Habit</Button>)}
             {habit && (<Button mode="tonal" onPress={() => setMarkHabitDialogVisible(true)}>Test Run</Button>)}
             {!habit && (<Button mode="contained" onPress={linkHabit}>Link Habit</Button>)}
           </Card.Actions>
