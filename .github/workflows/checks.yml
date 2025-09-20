@@ -1,0 +1,29 @@
+# Copyright (c) 2025 Joseph Hale
+# 
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
+name: "Standard Checks"
+
+on:
+  push:
+    branches: ["master", "ci"]
+
+jobs:
+  check:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: 'package.json'
+          cache: 'npm'
+      - name: Install Node dependencies
+        run: npm install
+      - name: Check lint rules
+        run: npm run lint
+      - name: Run JavaScript Tests
+        run: npm run test

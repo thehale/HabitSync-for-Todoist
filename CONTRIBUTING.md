@@ -50,11 +50,11 @@ You've successfully run and modified your React Native App. :partying_face:
 - If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
 - If you're curious to learn more about React Native, check out the [Introduction to React Native](https://reactnative.dev/docs/getting-started).
 
-# Troubleshooting
+## Troubleshooting
 
 If you can't get this to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
 
-# Learn More
+## Learn More
 
 To learn more about React Native, take a look at the following resources:
 
@@ -63,3 +63,29 @@ To learn more about React Native, take a look at the following resources:
 - [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
 - [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
 - [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+
+## Credential Management in CI/CD
+
+### `secrets.MATCH_GIT_BASIC_AUTHORIZATION`
+
+This secret allows [Fastlane to clone the private
+repository](https://docs.fastlane.tools/actions/match/#git-storage-on-github)
+storing the iOS signing certificates and provisioning profiles.
+
+Configuring the secret takes two steps:
+
+1. Create a fine-grained personal access token with **read-only** permissions to
+   **Content** (which will auto-imply read permissions on **Metadata**) to the
+   private repository containing your signing certs and provisioning profiles. I
+   recommend a 1 year token expiration.
+2. Base64 encode your username and token into an authorization header, and set
+   the resulting value as the GitHub Actions secret.
+    - e.g. `echo -n your_github_username:your_personal_access_token | base64`
+
+### `secrets.SECRETS_TAR_GZ_B64`
+
+```
+tar -cz .env AuthKey_TEAMID.p8 fastlane@googleplayconsole.json todoist-habit-sync.keystore | base64 > secrets.b64
+
+# The copy the contents of `secrets.b64` into the secret in GitHub.
+```

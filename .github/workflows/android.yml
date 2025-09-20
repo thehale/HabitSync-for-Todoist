@@ -1,0 +1,43 @@
+# Copyright (c) 2025 Joseph Hale
+# 
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
+name: "Android"
+
+on:
+  push:
+    branches: ["master", "ci"]
+
+jobs:
+  build:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: 'package.json'
+          cache: 'npm'
+      - name: Install Node dependencies
+        run: npm install
+      - name: Build Application
+        run: |
+          echo $SECRETS_TAR_GZ_B64 | base64 -d | tar -xz -C fastlane
+          #  open secrets   | remove blanks   | grab values     |strip quotes| add the mask command           | redact from GitHub Actions logs
+          cat fastlane/.env | grep -v '^\s*$' | cut -d "=" -f 2 |  tr -d '"' | awk '{print "::add-mask::"$0}' | xargs -n1 echo
+          bundle exec fastlane android build
+        env:
+          SECRETS_TAR_GZ_B64: ${{ secrets.SECRETS_TAR_GZ_B64 }}
+          RUBYOPT: '-rostruct' # Workaround for "NameError: uninitialized constant Fastlane::OpenStruct" (source: https://github.com/fastlane/fastlane/issues/21944#issuecomment-2045244250)
