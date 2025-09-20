@@ -8,7 +8,7 @@ name: "Standard Checks"
 
 on:
   push:
-    branches: ["master", "ci"]
+    branches: ["master", "main", "ci"]
 
 jobs:
   check:

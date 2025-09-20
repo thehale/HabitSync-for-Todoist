@@ -8,7 +8,7 @@ name: "Android"
 
 on:
   push:
-    branches: ["master", "ci"]
+    branches: ["master", "main", "ci"]
 
 jobs:
   build:
