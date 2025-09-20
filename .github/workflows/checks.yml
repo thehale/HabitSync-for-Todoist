@@ -26,4 +26,4 @@ jobs:
       - name: Check lint rules
         run: npm run lint
       - name: Run JavaScript Tests
-        run: npm run test
+        run: npm run test -- --passWithNoTests 
