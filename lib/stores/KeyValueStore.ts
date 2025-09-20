@@ -21,7 +21,7 @@ export default class KeyValueStore {
 
 	async put(key: string, value: string): Promise<void> {
 		if (!this.setters.has(key)) {
-			const setter = async (value: string) => await this.external.set(key, value);
+			const setter = async (newVal: string) => await this.external.set(key, newVal);
 			this.setters.set(key, debounce(setter, 1000, { trailing: true }));
 		}
 		return this.setters.get(key)!(value);

@@ -47,11 +47,11 @@ function useTheme() {
 	const [settings, updateSettings] = useSettings('useTheme');
 	const colorScheme = useColorScheme();
 
-	const scheme = settings.scheme === "system" ? colorScheme ?? DEFAULT_SYSTEM_COLOR_SCHEME : settings.scheme;
-	const theme = scheme === "dark" ? settings.theme.dark : settings.theme.light;
+	const currentScheme = settings.scheme === "system" ? colorScheme ?? DEFAULT_SYSTEM_COLOR_SCHEME : settings.scheme;
+	const colors = currentScheme === "dark" ? settings.theme.dark : settings.theme.light;
 
 	return {
-		theme: { fonts: settings.theme.fonts, colors: theme } as Theme,
+		theme: { fonts: settings.theme.fonts, colors } as Theme,
 		setTheme: (theme: ThemeDefinition) => updateSettings({ theme }),
 		setScheme: (scheme: ColorScheme) => updateSettings({ scheme }),
 		resetTheme: () => updateSettings({ theme: DEFAULT_THEME, scheme: DEFAULT_COLOR_SCHEME }),

@@ -19,10 +19,10 @@ async function queryRawTasks(apiToken: string, since: Date): Promise<TodoistTask
     },
   );
   const json = await tasks.json();
-  if (json['error']) {
+  if (json.error) {
     throw new Error(JSON.stringify(json));
   }
-  return json['items'] as TodoistTask[];
+  return json.items as TodoistTask[];
 }
 
 export async function queryTasks(apiToken: string, since: Date): Promise<Task[]> {

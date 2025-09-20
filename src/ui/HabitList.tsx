@@ -1,4 +1,4 @@
-import { Alert, FlatList, NativeModules, View } from 'react-native';
+import { Alert, FlatList, NativeModules, StyleSheet, View } from 'react-native';
 import { LoopHabit, PersistentTask } from '../types';
 import { useCallback, useState } from 'react';
 
@@ -185,9 +185,9 @@ function HabitList() {
   const tasks = useTodoistTasks();
   console.debug(new Date(), tasks.length);
   return (
-    <View style={{ flex: 1 }}>
+    <View style={styles.container}>
       {tasks.length === 0 ? (
-        <View style={{ flex: 1, justifyContent: 'center', marginHorizontal: "10%" }}>
+        <View style={styles.empty}>
           <Text>
             <Text>No recently completed recurring tasks found in Todoist.</Text>
             <Text>{'\n\n'}</Text>
@@ -201,11 +201,17 @@ function HabitList() {
           data={tasks}
           renderItem={({ item }) => <Habit item={item} />}
           keyExtractor={item => item.id}
-          contentContainerStyle={{ gap: 8, padding: 8 }}
+          contentContainerStyle={styles.contentContainer}
         />
       )}
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: { flex: 1 },
+  contentContainer: { gap: 8, padding: 8 },
+  empty: { flex: 1, justifyContent: 'center', marginHorizontal: "10%" },
+});
 
 export default HabitList;

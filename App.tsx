@@ -1,4 +1,4 @@
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import Divider from '@components/Divider';
 import HabitList from './src/ui/HabitList';
@@ -12,16 +12,21 @@ export default function App() {
   const { theme } = useTheme();
   return (
     <SafeAreaProvider>
-      <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.background }}>
+      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
         <HabitList />
-        <View style={{ margin: 8 }}>
+        <View style={styles.spacing}>
           <TokenManagement />
         </View>
         <Divider />
-        <View style={{ margin: 8 }}>
+        <View style={styles.spacing}>
           <ManualSync />
         </View>
       </SafeAreaView>
     </SafeAreaProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  container: { flex: 1 },
+  spacing: { margin: 8 },
+});

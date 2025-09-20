@@ -35,7 +35,7 @@ export function useTodoistTasks(since?: Date): PersistentTask[] {
       })
         .catch(error => console.error(error));
     }
-  }, [apiToken, buffer]);
+  }, [apiToken, buffer]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return tasks.map(t => ({
     ...t,

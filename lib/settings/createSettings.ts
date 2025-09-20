@@ -20,8 +20,8 @@ export default function createSettings<S extends Settings>(definitions: S) {
 	}
 
 	function useSettings(callerName: string = 'settings') {
-		const subscribe = useCallback<Parameters<typeof useSyncExternalStore>[0]>((listener) => store.subscribe(listener, callerName), [store, callerName]);
-		const getSnapshot = useCallback(() => store.getSnapshot(), [store]);
+		const subscribe = useCallback<Parameters<typeof useSyncExternalStore>[0]>((listener) => store.subscribe(listener, callerName), [callerName]);
+		const getSnapshot = useCallback(() => store.getSnapshot(), []);
 		
 		const snapshot = useSyncExternalStore(subscribe, getSnapshot);
 		const update = (updates: Partial<typeof snapshot>) => store.update(updates);

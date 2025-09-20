@@ -23,12 +23,8 @@ export class NamedSubscriberStore<State extends Record<string, any>> {
 		this.listeners.set(name, namedListeners)
 
 		const unsubscribe = () => {
-			const namedListeners = this.listeners.get(name) ?? []
-			const index = namedListeners.indexOf(callback)
-			if (index !== -1) {
-				namedListeners.splice(index, 1)
-				this.listeners.set(name, namedListeners)
-			}
+			const listeners = this.listeners.get(name) ?? []
+			this.listeners.set(name, listeners.filter(l => l !== callback))
 		}
 		return unsubscribe
 	}
@@ -49,12 +45,13 @@ export class NamedSubscriberStore<State extends Record<string, any>> {
 	}
 
 	/** Assesses if the setting can be assigned the value */
-	protected isValidUpdate<S extends keyof State>(setting: S, value: State[S]): boolean {
+	protected isValidUpdate<S extends keyof State>(setting: S, value: State[S]): boolean { // eslint-disable-line @typescript-eslint/no-unused-vars
 		return true
 	}
 	
+	
 	/** Allows child classes to trigger additional effects after successful updates (e.g. sync external stores) */
-	protected onUpdate<S extends keyof State>(setting: S, value: State[S]) { }
+	protected onUpdate<S extends keyof State>(setting: S, value: State[S]) { }  // eslint-disable-line @typescript-eslint/no-unused-vars
 
 	getSnapshot(): State {
 		if (this.snapshot === null) this.snapshot = structuredClone(this.state)

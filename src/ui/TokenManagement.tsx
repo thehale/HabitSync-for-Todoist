@@ -1,4 +1,4 @@
-import { Linking, View } from 'react-native';
+import { Linking, StyleSheet, View } from 'react-native';
 
 import Button from '@components/Button';
 import Dialog from '@components/Dialog';
@@ -6,6 +6,11 @@ import Text from '@components/Text';
 import TextInput from '@components/TextInput';
 import { useApiKey } from './useStorage';
 import { useState } from 'react';
+
+const styles = StyleSheet.create({
+  container: { gap: 10 },
+  inset: { marginHorizontal: 2 },
+})
 
 export function TokenManagement() {
   const [token, setToken] = useApiKey();
@@ -16,8 +21,8 @@ export function TokenManagement() {
     <>
       {token && <Button mode="outlined" intent="danger" onPress={() => setClearDialogVisible(true)}>Clear API Token</Button>}
       {!token && (
-        <View style={{ gap: 10 }}>
-          <View style={{ marginHorizontal: 2 }}>
+        <View style={styles.container}>
+          <View style={styles.inset}>
             <TextInput
               placeholder='Todoist API Token'
               value={text}
