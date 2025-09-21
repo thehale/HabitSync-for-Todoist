@@ -12,6 +12,8 @@ on:
 
 jobs:
   build:
+    # Disable iOS builds since there won't be an iOS app until Loop Habit adds iOS support.
+    if: false
     timeout-minutes: 25
     runs-on: macos-latest
     steps:
