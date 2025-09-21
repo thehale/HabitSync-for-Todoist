@@ -1,8 +1,8 @@
-// Adapted from: https://gist.github.com/carloscuesta/678668da906bb80bdd22c8fd690c4fc4
+// Adapted from:
+// https://gist.github.com/carloscuesta/678668da906bb80bdd22c8fd690c4fc4
 
-task('incrementVersionCode') {
+task incrementVersionCode {
     doLast {
-        description "Increments Version Code"
         def versionCode = Integer.parseInt(VERSION_CODE) + 1
         ant.propertyfile(file: "../gradle.properties") {
             entry(key: "VERSION_CODE", value: versionCode)

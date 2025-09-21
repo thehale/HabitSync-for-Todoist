@@ -41,6 +41,22 @@ Build the iOS application.
 
 Publish a beta release to the App Store
 
+### ios production
+
+```sh
+[bundle exec] fastlane ios production
+```
+
+Publish a production release to the App Store
+
+### ios certificates_reset
+
+```sh
+[bundle exec] fastlane ios certificates_reset
+```
+
+Reset certificates and provisioning profiles (e.g. after expiration)
+
 ----
 
 

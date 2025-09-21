@@ -17,21 +17,29 @@ default_platform(:android)
 
 desc "Make sure to copy the `.env.dist` to `.env` and fill all values before running any lanes"
 
+exit_messages = []
+
 platform :ios do
-  before_all do
-    ENV["NO_FLIPPER"] = "1"  # Disable Flipper in Release builds
-  end
-  
+
   desc 'Fetch certificates and provisioning profiles'
   lane :certificates do
-    match(type: 'development', keychain_password: ENV['MATCH_PASSWORD'])
-    match(type: 'appstore', keychain_password: ENV['MATCH_PASSWORD'])
+    setup_ci if ENV['CI']
+    match(type: 'development')
+    match(type: 'appstore')
+  rescue => exception
+    exit_messages << [
+      "HELP: If certificates are EXPIRED/NOT VALID run",
+      "",
+      "    fastlane ios certificates_reset",
+      "",
+      "and follow the instructions presented there.",
+    ]
+    raise exception
   end
 
   desc 'Build the iOS application.'
   lane :build do
-    # certificates
-
+    certificates if ENV['CI']
     require "json"
     package_json = JSON.parse(File.read("../package.json"))
     increment_version_number_in_xcodeproj(
@@ -42,13 +50,17 @@ platform :ios do
       xcodeproj: "ios/TodoistHabitSync.xcodeproj"
     )
 
+    # xcversion(version: "16.3")
     gym
-
-    echo(message: "----------------------------------------------------------")
-    echo(message: "HELP: If the build FAILED, make sure to...")
-    echo(message: "  (1) run `fastlane ios certificates`, AND")
-    echo(message: "  (2) unlock the keychain with `security unlock-keychain`.")
-    echo(message: "----------------------------------------------------------")
+  rescue => exception
+    exit_messages << [
+      "HELP: If the build FAILED, make sure to...",
+      "  - [ ] `npm run pods` - Install native dependencies",
+      "  - [ ] `fastlane ios certificates` - Install certificates/provisioning profiles",
+      "  - [ ] `security unlock-keychain` - Allow pulling private signing keys from the keychain (e.g. in SSH sessions)",
+      "  - [ ] Try running this command directly on the Mac (not over SSH) to handle GUI prompts"
+    ]
+    raise exception
   end
 
   desc "Publish a beta release to the App Store"
@@ -59,7 +71,56 @@ platform :ios do
       issuer_id: ENV["IOS_APP_STORE_CONNECT_ISSUER_ID"],
       key_filepath: ENV["IOS_APP_STORE_CONNECT_KEY_FILE_PATH"],
     )
-    pilot
+    upload_to_testflight
+  end
+  
+  desc "Publish a production release to the App Store"
+  lane :production do
+    build
+    app_store_connect_api_key(
+      key_id: ENV["IOS_APP_STORE_CONNECT_KEY_ID"],
+      issuer_id: ENV["IOS_APP_STORE_CONNECT_ISSUER_ID"],
+      key_filepath: ENV["IOS_APP_STORE_CONNECT_KEY_FILE_PATH"],
+    )
+    upload_to_app_store(
+      precheck_include_in_app_purchases: false,
+      submission_information: {
+        add_id_info_uses_idfa: false,
+      },
+      submit_for_review: true,
+      metadata_path: "./fastlane/metadata/ios",
+      force: true
+    )
+  end
+
+  desc 'Reset certificates and provisioning profiles (e.g. after expiration)'
+  lane :certificates_reset do
+    print_message_block [
+      "👀 Resetting certificates takes some manual work...",
+      "  (1) App Store Connect",
+      "      - [ ] Revoke expired certificates: https://developer.apple.com/account/resources/certificates/list",
+      "      - [ ] Revoke expired profiles: https://developer.apple.com/account/resources/profiles/list",
+      "  (2) Git: #{ENV['IOS_CERTIFICATE_REPOSITORY_URL']}",
+      "      - [ ] Delete expired certificates (.cer, .p12)",
+      "      - [ ] Delete expired profiles (.mobileprovision)",
+    ]
+    complete = prompt(text: "Have you completed the manual steps above?", boolean: true)
+    if complete
+      echo(message: "🏗️ Attempting to update certificates")
+      begin
+        sh('sed -i "" "s/readonly/# readonly/" Matchfile')  # Make certificates editable
+        certificates
+        print_message_block [
+          "✅ Certificates updated.",
+          "👀 Double check your keychain to ensure old certs are no longer installed.",
+          "🆘 If you still have signing problems, try here: https://forums.developer.apple.com/forums/thread/712005",
+        ]
+      ensure
+        sh('sed -i "" "s/# readonly/readonly/" Matchfile')  # Re-lock edits of certificates
+      end
+    else
+      echo(message: "❌ Certificates were NOT adjusted")
+    end
   end
 
 end
@@ -68,16 +129,16 @@ platform :android do
 
   desc "Build the Android application."
   lane :build do
-    gradle(task: 'clean', project_dir: 'android/')
     gradle(task: 'incrementVersionCode', project_dir: 'android/')
-    gradle(task: 'syncVersionNameFromPackageJson', project_dir: 'android/')
+    gradle(task: 'syncVersionName', project_dir: 'android/')
+    gradle(task: 'clean', project_dir: 'android/')
     gradle(task: 'bundle', build_type: 'Release', project_dir: 'android/')
   end
 
   desc "Publish an internal release to the Play Store"
   lane :internal do
     build
-    supply(track: 'internal', track_promote_to: 'internal', release_status: 'draft')
+    supply(track: 'internal', track_promote_to: 'internal')
   end
 
   desc "Publish a alpha release to the Play Store"
@@ -98,4 +159,20 @@ platform :android do
     supply(track: 'production', track_promote_to: 'production')
   end
 
+end
+
+def print_message_block(message)
+  echo(message: "----------------------------------------------------------")
+  if message.is_a?(Array)
+    message.each { |line| echo(message: line) }
+  else
+    echo(message: message)
+  end
+  echo(message: "----------------------------------------------------------")
+end
+
+at_exit do |status|
+  exit_messages.each do |message|
+    print_message_block message
+  end
 end
