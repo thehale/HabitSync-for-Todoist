@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import Button from '@components/Button';
 import Dialog from '@components/Dialog';
 import Text from '@components/Text';
-import { View } from 'react-native';
+import { Linking, View } from 'react-native';
 
 const runSync = require('../tasks/TodoistHabitSync');
 
@@ -43,6 +43,7 @@ function SyncDialog({ visible, onDismiss }: SyncDialogProps) {
       actions={
         <Dialog.Actions>
           <Button onPress={onDismiss}>Cancel</Button>
+          <Button mode="tonal" onPress={() => Linking.sendIntent("android.settings.IGNORE_BATTERY_OPTIMIZATION_SETTINGS")}>Battery Settings</Button>
           <Button mode="contained" onPress={() => { runSync(); onDismiss(); }}>Run Sync</Button>
         </Dialog.Actions>
       }
