@@ -13,6 +13,8 @@ Keeping track of your habits has never been easier
 
 [![Habit Sync for Todoist on the Google Play Store](docs/get_it_on_google_play.svg)](https://play.google.com/store/apps/details?id=dev.jhale.todoisthabitsync)
 
+![](./docs/demo-sync.gif)
+
 </div>
 
 
@@ -33,7 +35,7 @@ Here's how:
 
 <div align="center">
 
-![](./docs/demo.gif)
+![](./docs/demo-link.gif)
 
 </div>
 
