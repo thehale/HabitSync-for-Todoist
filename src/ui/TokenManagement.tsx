@@ -1,9 +1,6 @@
 import { Linking, StyleSheet, View } from 'react-native';
 
-import Button from '@components/Button';
-import Dialog from '@components/Dialog';
-import Text from '@components/Text';
-import TextInput from '@components/TextInput';
+import { Button, Dialog, Text, TextInput } from 'react-native-expressive';
 import { useApiKey } from './useStorage';
 import { useState } from 'react';
 

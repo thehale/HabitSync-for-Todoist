@@ -4,7 +4,7 @@
   "exclude": ["**/node_modules", "**/Pods"],
   "compilerOptions": {
     "paths": {
-      "@components/*": ["./lib/components/*"]
+      "react-native-expressive": ["./lib/react-native-expressive/src"]
     }
   }
 }

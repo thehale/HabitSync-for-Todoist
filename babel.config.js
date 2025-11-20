@@ -7,7 +7,7 @@ module.exports = {
         extensions: ['.ios.js', '.android.js', '.ios.jsx', '.android.jsx', '.js', '.jsx', '.json', '.ts', '.tsx'],
         root: ['.'],
         alias: {
-          '@components': './lib/components',
+          'react-native-expressive': './lib/react-native-expressive/src',
         },
       },
     ],

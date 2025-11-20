@@ -2,10 +2,7 @@ import { Alert, FlatList, NativeModules, StyleSheet, View } from 'react-native';
 import { LoopHabit, PersistentTask } from '../types';
 import { useCallback, useState } from 'react';
 
-import Button from '@components/Button';
-import Card from '@components/Card';
-import Dialog from '@components/Dialog';
-import Text from '@components/Text';
+import { Button, Card, Dialog, Text } from 'react-native-expressive';
 import { useTodoistTasks } from './useTodoistTasks';
 
 const { LoopHabitModule } = NativeModules;

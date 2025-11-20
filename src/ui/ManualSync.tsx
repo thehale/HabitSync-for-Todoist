@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 
-import Button from '@components/Button';
-import Dialog from '@components/Dialog';
-import Text from '@components/Text';
+import { Button, Dialog, Text } from 'react-native-expressive';
 import { Linking, View } from 'react-native';
 
 const runSync = require('../tasks/TodoistHabitSync');

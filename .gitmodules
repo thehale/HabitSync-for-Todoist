@@ -1,0 +1,3 @@
+[submodule "lib/react-native-expressive"]
+	path = lib/react-native-expressive
+	url = https://github.com/thehale/react-native-expressive
