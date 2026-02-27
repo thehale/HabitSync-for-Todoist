@@ -1,15 +1,36 @@
-import { Task, TodoistTask } from "../types";
+import { Task, TodoistActivity } from "../types";
 
-async function queryRawTasks(apiToken: string, since: Date): Promise<TodoistTask[]> {
+export async function queryTasks(apiToken: string, since: Date): Promise<Task[]> {
+  const tasks = await queryRawTasks(apiToken, since);
+  return tasks.map(i => ({
+    id: i.object_id,
+    occurrenceId: i.object_id,
+    title: i.extra_data.content,
+    completedAt: new Date(i.event_date),
+    isRecurring: i.extra_data?.is_recurring ?? false,
+  })).filter(i => i.isRecurring)
+}
+
+async function queryRawTasks(apiToken: string, since: Date): Promise<TodoistActivity[]> {
   if (!apiToken) {
-    return [] as TodoistTask[];
+    return [] as TodoistActivity[];
   }
-  let tasks = await fetch(
-    'https://api.todoist.com/sync/v9/completed/get_all?' +
+  let response = await fetchActivities(apiToken, since);
+  let text = await response.text();
+  if (!response.ok) {
+    throw new Error(`Todoist API error: ${response.status} ${response.statusText}\n${text}`);
+  }
+  return parseResponse(text).results as TodoistActivity[];
+}
+
+async function fetchActivities(apiToken: string, since: Date) {
+  return await fetch(
+    'https://api.todoist.com/api/v1/activities?' +
     new URLSearchParams({
-      since: new Date(since.getTime()).toISOString(),
-      limit: '200',
-      annotate_items: 'true',
+      limit: '100',
+      object_type: 'item',
+      event_type: 'completed',
+      date_from: new Date(since.getTime()).toISOString(),
     }),
     {
       headers: {
@@ -18,21 +39,12 @@ async function queryRawTasks(apiToken: string, since: Date): Promise<TodoistTask
       },
     },
   );
-  const json = await tasks.json();
-  if (json.error) {
-    throw new Error(JSON.stringify(json));
-  }
-  return json.items as TodoistTask[];
 }
 
-export async function queryTasks(apiToken: string, since: Date): Promise<Task[]> {
-  const tasks = await queryRawTasks(apiToken, since);
-  return tasks.map(i => ({
-    id: i?.item_object?.id,
-    occurrenceId: i.id,
-    title: i?.item_object?.content,
-    completedAt: new Date(i.completed_at),
-    isRecurring: i?.item_object?.due?.is_recurring,
-  }))
-    .filter(i => i.isRecurring)
+function parseResponse(text: string) {
+  try {
+    return JSON.parse(text);
+  } catch (e) {
+    throw new Error(`Failed to parse response: ${text}`);
+  }
 }

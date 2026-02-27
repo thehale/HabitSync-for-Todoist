@@ -3,19 +3,20 @@ export interface LoopHabit {
   name: string;
   action: string;
 }
-export interface TodoistTask {
-  completed_at: string;
-  content: string;
-  id: string;
-  item_object: {
-    id: string;
-    content: string;
-    due: {
-      is_recurring: boolean;
-    };
-  };
 
+export interface TodoistActivity {
+  event_date: string;
+  event_type: string;
+  extra_data: {
+    content: string;
+    due_date: string;
+    is_recurring: boolean;
+  },
+  object_id: string;
+  object_type: string;
+  initiator_id: string;
 }
+
 export interface Task {
   id: string;
   occurrenceId: string;
