@@ -9,13 +9,23 @@ type JsonFetcher = (input: RequestInfo, init?: RequestInit) => Promise<any>;
 const fetchJSON: JsonFetcher = async (input, init) => {
 	const response = await fetch(input, init);
 	const text = await response.text();
+	const log = {
+		request: { url: input.toString() },
+		response: {
+			status: response.status,
+			statusText: response.statusText,
+			body: text,
+		}
+	}
 	if (!response.ok) {
-		throw new Error(`HTTP error ${response.status} ${response.statusText}\n${text}`);
+		throw new Error(JSON.stringify({...log, message: "Request failed"}));
 	}
 	try {
-		return JSON.parse(text);
+		const json = JSON.parse(text);
+		console.debug({...log, message: "Request succeeded"})
+		return json;
 	} catch (e) {
-		throw new Error(`Failed to parse response: ${text}`);
+		throw new Error(JSON.stringify({...log, message: "Failed to parse response"}));
 	}
 }
 
