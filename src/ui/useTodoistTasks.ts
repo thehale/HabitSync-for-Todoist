@@ -4,12 +4,7 @@ import { useApiKey, useTasks } from "./useStorage";
 import { queryTasks } from "../lib/Todoist";
 import { useEffect } from "react";
 
-const MILLIS = 1;
-const SECONDS = MILLIS * 1000;
-const MINUTES = SECONDS * 60;
-const HOURS = MINUTES * 60;
-const DAYS = HOURS * 24;
-
+import { DAYS, SECONDS } from "../lib/time";
 
 function defaultSinceDate(): Date {
   return new Date(Date.now() - 1 * DAYS);

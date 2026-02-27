@@ -46,10 +46,7 @@ function Habit({ item }: HabitProps) {
       console.log(JSON.stringify(e));
     }
   }, [habit]);
-  const content = [
-    `Todoist ID: ${item.id}`,
-    item.ignored ? 'IGNORED' : `Loop Habit: ${habit ? habit.name : 'Nothing'}`,
-  ].join('\n');
+  const content = item.ignored ? 'IGNORED' : habit ? `Loop Habit > ${habit.name}` : null;
   return (
     <>
       <Card
@@ -180,7 +177,6 @@ function MarkHabitDialog({ visible, onAccept, onDismiss }: MarkHabitDialogProps)
 
 function HabitList() {
   const tasks = useTodoistTasks();
-  console.debug(new Date(), tasks.length);
   return (
     <View style={styles.container}>
       {tasks.length === 0 ? (

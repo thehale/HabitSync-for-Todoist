@@ -1,6 +1,7 @@
 import { Storage } from '../lib/Storage';
 import { Task } from '../types';
 import { useState } from 'react';
+import { normalize } from '../lib/normalize';
 
 export function useStorage() {
   return Storage;
@@ -16,13 +17,11 @@ export function useApiKey() {
 }
 
 export function useTasks() {
-  const dedupTasks = (tasks: Task[]) => Array.from(new Map(tasks.map(task => [task.id, task])).values());
-  const sortTasks = (tasks: Task[]) => tasks.sort((a, b) => (a.ignored ? 1 : 0) - (b.ignored ? 1 : 0) || (a.habit ? 1 : 0) - (b.habit ? 1 : 0) || a.title.localeCompare(b.title));
-  const [tasks, setTasks] = useState<Task[]>(sortTasks(dedupTasks(Storage.Tasks.read())));
+  const [tasks, setTasks] = useState<Task[]>(normalize(Storage.Tasks.read()));
   const saveTasks = (latestTasks: Task[]) => {
-    const dedupedTasks = sortTasks(dedupTasks(latestTasks));
-    Storage.Tasks.write(dedupedTasks);
-    setTasks(dedupedTasks);
+    const normalizedTasks = normalize(latestTasks);
+    Storage.Tasks.write(normalizedTasks);
+    setTasks(normalizedTasks);
   }
   return [tasks, saveTasks] as const;
 }

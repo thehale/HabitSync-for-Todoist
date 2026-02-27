@@ -1,15 +1,30 @@
-import { Task, TodoistTask } from "../types";
+import { Task, TodoistActivity } from "../types";
+import fetchJSON from "./fetchJson";
+import { DAYS } from "./time";
 
-async function queryRawTasks(apiToken: string, since: Date): Promise<TodoistTask[]> {
-  if (!apiToken) {
-    return [] as TodoistTask[];
+export async function queryTasks(apiToken: string, since: Date): Promise<Task[]> {
+  const activities = await queryActivities(apiToken, since);
+  return activities.map(i => ({
+    id: i.object_id,
+    occurrenceId: i.object_id,
+    title: i.extra_data.content,
+    completedAt: new Date(i.event_date),
+    isRecurring: i.extra_data?.is_recurring ?? false,
+  })).filter(i => i.isRecurring)
+}
+
+async function queryActivities(apiToken: string, since: Date): Promise<TodoistActivity[]> {
+  const limitedSince = new Date(Date.now() - 1 * DAYS);
+  if (since < limitedSince) {
+    since = limitedSince;
   }
-  let tasks = await fetch(
-    'https://api.todoist.com/sync/v9/completed/get_all?' +
+  const json = await fetchJSON(
+    'https://api.todoist.com/api/v1/activities?' +
     new URLSearchParams({
-      since: new Date(since.getTime()).toISOString(),
-      limit: '200',
-      annotate_items: 'true',
+      limit: '100',
+      object_type: 'item',
+      event_type: 'completed',
+      date_from: new Date(since.getTime()).toISOString(),
     }),
     {
       headers: {
@@ -18,21 +33,5 @@ async function queryRawTasks(apiToken: string, since: Date): Promise<TodoistTask
       },
     },
   );
-  const json = await tasks.json();
-  if (json.error) {
-    throw new Error(JSON.stringify(json));
-  }
-  return json.items as TodoistTask[];
-}
-
-export async function queryTasks(apiToken: string, since: Date): Promise<Task[]> {
-  const tasks = await queryRawTasks(apiToken, since);
-  return tasks.map(i => ({
-    id: i?.item_object?.id,
-    occurrenceId: i.id,
-    title: i?.item_object?.content,
-    completedAt: new Date(i.completed_at),
-    isRecurring: i?.item_object?.due?.is_recurring,
-  }))
-    .filter(i => i.isRecurring)
+  return json.results as TodoistActivity[];
 }
