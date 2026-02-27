@@ -1,5 +1,6 @@
 import { Task, TodoistActivity } from "../types";
 import fetchJSON from "./fetchJson";
+import { DAYS } from "./time";
 
 export async function queryTasks(apiToken: string, since: Date): Promise<Task[]> {
   const activities = await queryActivities(apiToken, since);
@@ -34,9 +35,3 @@ async function queryActivities(apiToken: string, since: Date): Promise<TodoistAc
   );
   return json.results as TodoistActivity[];
 }
-
-const MILLISECONDS = 1;
-const SECONDS = MILLISECONDS * 1000;
-const MINUTES = SECONDS * 60;
-const HOURS = MINUTES * 60;
-const DAYS = HOURS * 24;
