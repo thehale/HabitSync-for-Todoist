@@ -1,8 +1,9 @@
 import { Task, TodoistActivity } from "../types";
+import fetchJSON from "./fetchJson";
 
 export async function queryTasks(apiToken: string, since: Date): Promise<Task[]> {
-  const tasks = await queryRawTasks(apiToken, since);
-  return tasks.map(i => ({
+  const activities = await queryActivities(apiToken, since);
+  return activities.map(i => ({
     id: i.object_id,
     occurrenceId: i.object_id,
     title: i.extra_data.content,
@@ -11,20 +12,8 @@ export async function queryTasks(apiToken: string, since: Date): Promise<Task[]>
   })).filter(i => i.isRecurring)
 }
 
-async function queryRawTasks(apiToken: string, since: Date): Promise<TodoistActivity[]> {
-  if (!apiToken) {
-    return [] as TodoistActivity[];
-  }
-  let response = await fetchActivities(apiToken, since);
-  let text = await response.text();
-  if (!response.ok) {
-    throw new Error(`Todoist API error: ${response.status} ${response.statusText}\n${text}`);
-  }
-  return parseResponse(text).results as TodoistActivity[];
-}
-
-async function fetchActivities(apiToken: string, since: Date) {
-  return await fetch(
+async function queryActivities(apiToken: string, since: Date): Promise<TodoistActivity[]> {
+  let json = await fetchJSON(
     'https://api.todoist.com/api/v1/activities?' +
     new URLSearchParams({
       limit: '100',
@@ -39,12 +28,5 @@ async function fetchActivities(apiToken: string, since: Date) {
       },
     },
   );
-}
-
-function parseResponse(text: string) {
-  try {
-    return JSON.parse(text);
-  } catch (e) {
-    throw new Error(`Failed to parse response: ${text}`);
-  }
+  return json.results as TodoistActivity[];
 }
