@@ -22,7 +22,7 @@ const fetchJSON: JsonFetcher = async (input, init) => {
 	}
 	try {
 		const json = JSON.parse(text);
-		console.debug({...log, message: "Request succeeded"})
+		console.trace({...log, message: "Request succeeded"})
 		return json;
 	} catch (e) {
 		throw new Error(JSON.stringify({...log, message: "Failed to parse response"}));
