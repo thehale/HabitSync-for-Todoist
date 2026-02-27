@@ -13,7 +13,11 @@ export async function queryTasks(apiToken: string, since: Date): Promise<Task[]>
 }
 
 async function queryActivities(apiToken: string, since: Date): Promise<TodoistActivity[]> {
-  let json = await fetchJSON(
+  const limitedSince = new Date(Date.now() - 1 * DAYS);
+  if (since < limitedSince) {
+    since = limitedSince;
+  }
+  const json = await fetchJSON(
     'https://api.todoist.com/api/v1/activities?' +
     new URLSearchParams({
       limit: '100',
@@ -30,3 +34,9 @@ async function queryActivities(apiToken: string, since: Date): Promise<TodoistAc
   );
   return json.results as TodoistActivity[];
 }
+
+const MILLISECONDS = 1;
+const SECONDS = MILLISECONDS * 1000;
+const MINUTES = SECONDS * 60;
+const HOURS = MINUTES * 60;
+const DAYS = HOURS * 24;
