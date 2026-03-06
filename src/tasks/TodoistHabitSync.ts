@@ -22,6 +22,7 @@ const API_LAG_BUFFER = 30 * MINUTES;
 module.exports = async () => {
   const apiToken = Storage.ApiKey.read();
   const storedTasks = Storage.Tasks.read()
+  const storedTitles = new Set(storedTasks.map(t => t.title));
   
   const queryDate = new Date(Storage.LastSync.read().getTime() - API_LAG_BUFFER);
   const recentlyCompletedTasks = await queryTasks(apiToken, queryDate);
@@ -33,14 +34,23 @@ module.exports = async () => {
 
   // @ts-ignore
   habitCompletingTasks.forEach(async t => await LoopHabitModule.takeHabitAction(t.habit.id, t.habit.action));
+
+  const updatedTasks = normalize([...storedTasks, ...recentlyCompletedTasks]);
+  const newUnlinkedTasks = updatedTasks.filter(t => !t.habit && !t.ignored && !storedTitles.has(t.title));
+  if (newUnlinkedTasks.length > 0) {
+    await LoopHabitModule.sendNewHabitNotification(newUnlinkedTasks.length);
+  }
+
   console.debug(JSON.stringify({
     message: 'Sync completed',
     recentlyCompletedTasks,
     recentlyCompletedTasksCount: recentlyCompletedTasks.length,
     habitCompletingTasks,
     habitCompletingTasksCount: habitCompletingTasks.length,
+    newUnlinkedTasks,
+    newUnlinkedTasksCount: newUnlinkedTasks.length,
   }));
   
-  Storage.Tasks.write(normalize([...storedTasks, ...recentlyCompletedTasks]));
+  Storage.Tasks.write(updatedTasks);
   Storage.LastSync.write(new Date())
 }
