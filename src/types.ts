@@ -4,6 +4,15 @@ export interface LoopHabit {
   action: string;
 }
 
+export interface SyncLogEntry {
+  timestamp: string;
+  success: boolean;
+  recentlyCompletedTasks: Array<{ id: string; title: string }>;
+  habitUpdates: Array<{ taskTitle: string; habitName: string }>;
+  habitErrors?: Array<{ taskTitle: string; habitName: string; error: string }>;
+  error?: string;
+}
+
 export interface TodoistActivity {
   event_date: string;
   event_type: string;

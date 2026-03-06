@@ -1,5 +1,5 @@
 import { MMKV } from "react-native-mmkv";
-import { Task } from "../types";
+import { SyncLogEntry, Task } from "../types";
 
 const mmkv = new MMKV();
 const _storage = {
@@ -14,6 +14,8 @@ const _storage = {
 const API_KEY_STORAGE_ID = 'todoist.apiKey'
 const TASKS_STORAGE_ID = 'todoist.tasks'
 const LAST_SYNC_DATE_STORAGE_ID = 'todoist.lastSync'
+const SYNC_LOGS_STORAGE_ID = 'todoist.syncLogs'
+const MAX_SYNC_LOGS = 100
 
 
 export const Storage = {
@@ -37,5 +39,16 @@ export const Storage = {
     },
     write: (date: Date) => 
       _storage.write(LAST_SYNC_DATE_STORAGE_ID, JSON.stringify(date))
-  }
+  },
+  SyncLogs: {
+    read: (): SyncLogEntry[] => {
+      const logs = _storage.read(SYNC_LOGS_STORAGE_ID)
+      return logs ? JSON.parse(logs) : []
+    },
+    append: (entry: SyncLogEntry) => {
+      const logs = Storage.SyncLogs.read()
+      const updated = [entry, ...logs].slice(0, MAX_SYNC_LOGS)
+      _storage.write(SYNC_LOGS_STORAGE_ID, JSON.stringify(updated))
+    },
+  },
 }

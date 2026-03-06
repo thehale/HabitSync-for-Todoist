@@ -20,27 +20,64 @@ const { LoopHabitModule } = NativeModules;
 const API_LAG_BUFFER = 30 * MINUTES;
 
 module.exports = async () => {
-  const apiToken = Storage.ApiKey.read();
-  const storedTasks = Storage.Tasks.read()
-  
-  const queryDate = new Date(Storage.LastSync.read().getTime() - API_LAG_BUFFER);
-  const recentlyCompletedTasks = await queryTasks(apiToken, queryDate);
-  const recentlyCompleted = new Map(recentlyCompletedTasks.map(t => [t.id, t]));
-  const habitCompletingTasks = storedTasks
-    .filter(stored => stored.habit !== undefined)
-    .filter(stored => recentlyCompleted.has(stored.id))
-    .filter(stored => recentlyCompleted.get(stored.id)!.completedAt > stored.completedAt)
+  const timestamp = new Date().toISOString();
+  try {
+    const apiToken = Storage.ApiKey.read();
+    const storedTasks = Storage.Tasks.read()
+    
+    const queryDate = new Date(Storage.LastSync.read().getTime() - API_LAG_BUFFER);
+    const recentlyCompletedTasks = await queryTasks(apiToken, queryDate);
+    const recentlyCompleted = new Map(recentlyCompletedTasks.map(t => [t.id, t]));
+    const habitCompletingTasks = storedTasks
+      .filter(stored => stored.habit !== undefined)
+      .filter(stored => recentlyCompleted.has(stored.id))
+      .filter(stored => recentlyCompleted.get(stored.id)!.completedAt > stored.completedAt)
 
-  // @ts-ignore
-  habitCompletingTasks.forEach(async t => await LoopHabitModule.takeHabitAction(t.habit.id, t.habit.action));
-  console.debug(JSON.stringify({
-    message: 'Sync completed',
-    recentlyCompletedTasks,
-    recentlyCompletedTasksCount: recentlyCompletedTasks.length,
-    habitCompletingTasks,
-    habitCompletingTasksCount: habitCompletingTasks.length,
-  }));
-  
-  Storage.Tasks.write(normalize([...storedTasks, ...recentlyCompletedTasks]));
-  Storage.LastSync.write(new Date())
+    // Habit actions are fired in parallel (matching the original behavior) to
+    // minimise sync duration. allSettled ensures a single failure doesn't
+    // prevent the remaining habits from being updated or the log from recording.
+    // @ts-ignore
+    const results = await Promise.allSettled(habitCompletingTasks.map(t => LoopHabitModule.takeHabitAction(t.habit.id, t.habit.action)));
+
+    const habitUpdates: Array<{ taskTitle: string; habitName: string }> = [];
+    const habitErrors: Array<{ taskTitle: string; habitName: string; error: string }> = [];
+    results.forEach((result, i) => {
+      const t = habitCompletingTasks[i];
+      if (result.status === 'fulfilled') {
+        habitUpdates.push({ taskTitle: t.title, habitName: t.habit!.name });
+      } else {
+        habitErrors.push({ taskTitle: t.title, habitName: t.habit!.name, error: String(result.reason) });
+      }
+    });
+
+    Storage.SyncLogs.append({
+      timestamp,
+      success: true,
+      recentlyCompletedTasks: recentlyCompletedTasks.map(t => ({ id: t.id, title: t.title })),
+      habitUpdates,
+      ...(habitErrors.length > 0 && { habitErrors }),
+    });
+
+    console.debug(JSON.stringify({
+      message: 'Sync completed',
+      recentlyCompletedTasks,
+      recentlyCompletedTasksCount: recentlyCompletedTasks.length,
+      habitCompletingTasks,
+      habitCompletingTasksCount: habitCompletingTasks.length,
+    }));
+    
+    Storage.Tasks.write(normalize([...storedTasks, ...recentlyCompletedTasks]));
+    Storage.LastSync.write(new Date())
+  } catch (e: any) {
+    const errorMessage = e instanceof Error ? e.message : String(e);
+    Storage.SyncLogs.append({
+      timestamp,
+      success: false,
+      recentlyCompletedTasks: [],
+      habitUpdates: [],
+      error: errorMessage,
+    });
+    console.error(JSON.stringify({ message: 'Sync failed', error: errorMessage }));
+    throw e;
+  }
 }
