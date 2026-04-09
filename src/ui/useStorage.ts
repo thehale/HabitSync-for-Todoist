@@ -1,6 +1,7 @@
 import { Storage } from '../lib/Storage';
 import { Task } from '../types';
 import { useState } from 'react';
+import { StructuredLog } from '../lib/lenador';
 
 export function useStorage() {
   return Storage;
@@ -22,4 +23,13 @@ export function useTasks() {
     setTasks(Storage.Tasks.read());
   }
   return [tasks, saveTasks] as const;
+}
+
+export function useLogs() {
+  const [logs, setLogs] = useState(Storage.Logs.read());
+  const addLog = (log: StructuredLog) => {
+    Storage.Logs.add(log);
+    setLogs(Storage.Logs.read());
+  }
+  return [logs, addLog] as const;
 }
