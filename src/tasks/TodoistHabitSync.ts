@@ -62,10 +62,12 @@ function ensure(condition: boolean, message: string, attributes: StructuredLog =
 }
 
 function ensureCompletedSinceLastSync(task: Task, stored: Task): boolean {
-  return ensure(stored.completedAt < task.completedAt, "skip: already recorded", {
+  const storedCompletedAt = stored.completedAt ?? new Date(0);
+  const taskCompletedAt = task.completedAt ?? new Date(0);
+  return ensure(storedCompletedAt < taskCompletedAt, "skip: already recorded", {
     "task.id": task.id,
-    "task.completedAt": task.completedAt.toISOString(),
-    "stored.completedAt": stored.completedAt.toISOString()
+    "stored.completedAt": storedCompletedAt.toISOString(),
+    "task.completedAt": taskCompletedAt.toISOString(),
   })
 }
 
