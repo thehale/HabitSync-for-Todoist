@@ -1,7 +1,6 @@
 import { NativeModules } from "react-native";
 import { Storage } from "../lib/Storage";
 import { queryTasks } from "../lib/Todoist"
-import { normalize } from "../lib/normalize";
 import { MINUTES } from "../lib/time";
 
 const { LoopHabitModule } = NativeModules;
@@ -41,6 +40,6 @@ module.exports = async () => {
     habitCompletingTasksCount: habitCompletingTasks.length,
   }));
   
-  Storage.Tasks.write(normalize([...storedTasks, ...recentlyCompletedTasks]));
+  Storage.Tasks.write([...storedTasks, ...recentlyCompletedTasks]);
   Storage.LastSync.write(new Date())
 }

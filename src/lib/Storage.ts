@@ -1,5 +1,6 @@
 import { MMKV } from "react-native-mmkv";
 import { Task } from "../types";
+import { normalize } from "./normalize";
 
 const mmkv = new MMKV();
 const _storage = {
@@ -24,11 +25,12 @@ export const Storage = {
   },
   Tasks: {
     read: (): Task[] => {
-      const tasks = _storage.read(TASKS_STORAGE_ID)
-      return tasks ? JSON.parse(tasks) : []
+      const raw = _storage.read(TASKS_STORAGE_ID)
+      const tasks = raw ? JSON.parse(raw) : [];
+      return normalize(tasks);
     },
     write: (tasks: Task[]) =>
-      _storage.write(TASKS_STORAGE_ID, JSON.stringify(tasks))
+      _storage.write(TASKS_STORAGE_ID, JSON.stringify(normalize(tasks)))
   },
   LastSync: {
     read: (): Date => {
