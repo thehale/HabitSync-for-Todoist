@@ -24,7 +24,9 @@ export const LOG = {
 		try {
 			await fn();
 		} catch (e) {
-			logger.error(e instanceof Error ? `${e.constructor.name} | ${e.message}` : String(e));
+			logger.error(e instanceof Error ? `${e.constructor.name} | ${e.message}` : String(e), {
+				stack: e instanceof Error ? e.stack ?? "" : ""
+			});
 			throw e;
 		} finally {
 			logger.save((message) => {
