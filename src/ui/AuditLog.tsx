@@ -17,7 +17,7 @@ export default function AuditLog({ logs }: AuditLogProps) {
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       {entries.map((entry, index) => (
-        <View key={index} style={{ gap: 12 }}>
+        <View key={index} style={styles.item}>
           <Text>{entry}</Text>
           {(index < entries.length - 1) && <Divider />}
         </View>
@@ -32,4 +32,5 @@ const styles = StyleSheet.create({
     gap: 12,
     paddingVertical: 4,
   },
+  item: { gap: 12 }
 });

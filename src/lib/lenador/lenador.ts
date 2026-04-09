@@ -39,7 +39,7 @@ export class Lenador {
 
 	event(message: string, attributes: StructuredLog = {}) {
 		const event: StructuredLog = { ...attributes, message };
-		this.#log["events"].push({
+		this.#log.events.push({
 			timestamp: new Date().toISOString(),
 			...event,
 		});

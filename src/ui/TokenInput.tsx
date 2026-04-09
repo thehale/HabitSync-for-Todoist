@@ -1,7 +1,6 @@
 import { Linking, StyleSheet, View } from 'react-native';
 
 import { Button, Dialog, Text, TextInput } from 'react-native-expressive';
-import { useApiKey } from './useStorage';
 import { useState } from 'react';
 
 const styles = StyleSheet.create({
