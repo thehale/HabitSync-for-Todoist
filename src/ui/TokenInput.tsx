@@ -9,33 +9,27 @@ const styles = StyleSheet.create({
   inset: { marginHorizontal: 2 },
 })
 
-export function TokenManagement() {
-  const [token, setToken] = useApiKey();
+interface TokenInputProps {
+  token: string;
+  setToken: (token: string) => void;
+}
+export default function TokenInput({ token, setToken }: TokenInputProps) {
   const [text, setText] = useState(token);
   const [showHelp, setHelpVisible] = useState(false);
-  const [showClearDialog, setClearDialogVisible] = useState(false);
   return (
     <>
-      {token && <Button mode="outlined" intent="danger" onPress={() => setClearDialogVisible(true)}>Clear API Token</Button>}
-      {!token && (
-        <View style={styles.container}>
-          <View style={styles.inset}>
-            <TextInput
-              placeholder='Todoist API Token'
-              value={text}
-              onChangeText={setText}
-              after={<Button mode="tonal" onPress={() => setHelpVisible(true)}> ? </Button>}
-            />
-          </View>
-          <Button mode="contained" onPress={() => { setToken(text); setText(''); }}>Set Token</Button>
+      <View style={styles.container}>
+        <View style={styles.inset}>
+          <TextInput
+            placeholder='Todoist API Token'
+            value={text}
+            onChangeText={setText}
+            after={<Button mode="tonal" onPress={() => setHelpVisible(true)}> ? </Button>}
+          />
         </View>
-      )}
+        <Button mode="contained" onPress={() => { setToken(text); setText(''); }}>Set Token</Button>
+      </View>
       <HelpDialog visible={showHelp} onDismiss={() => setHelpVisible(false)} />
-      <ClearTokenDialog
-        visible={showClearDialog}
-        onAccept={() => { setToken(''); setText(''); }}
-        onDismiss={() => setClearDialogVisible(false)}
-      />
     </>
   );
 }
@@ -74,26 +68,3 @@ function HelpDialog({ visible, onDismiss }: HelpDialogProps) {
   );
 }
 
-interface ClearTokenDialogProps {
-  visible: boolean;
-  onAccept: () => void;
-  onDismiss: () => void;
-}
-function ClearTokenDialog({
-  visible,
-  onAccept,
-  onDismiss,
-}: ClearTokenDialogProps) {
-  return (
-    <Dialog visible={visible} onDismiss={onDismiss}
-      title="Are you sure you want clear the API token?"
-      content={"All syncs will stop until you set a new API token."}
-      actions={
-        <Dialog.Actions>
-          <Button onPress={onDismiss}>Cancel</Button>
-          <Button mode="contained" intent="danger" onPress={() => { onAccept(); onDismiss(); }}>Disable Syncs</Button>
-        </Dialog.Actions>
-      }
-    />
-  );
-}

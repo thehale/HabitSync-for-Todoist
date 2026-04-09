@@ -56,9 +56,9 @@ function Habit({ item }: HabitProps) {
           <Card.Actions>
             <Button mode="text" intent="danger" onPress={() => setDeleteDialogVisible(true)}>Delete</Button>
             {!item.ignored && !item.habit && <Button mode="text" onPress={() => setIgnoreDialogVisible(true)}>Ignore</Button>}
-            {habit && (<Button mode="text" intent="danger" onPress={() => setUnlinkDialogVisible(true)}>Unlink Habit</Button>)}
-            {habit && (<Button mode="tonal" onPress={() => setMarkHabitDialogVisible(true)}>Test Run</Button>)}
-            {!habit && (<Button mode="contained" onPress={linkHabit}>Link Habit</Button>)}
+            {habit && (<Button mode="text" intent="danger" onPress={() => setUnlinkDialogVisible(true)}>Unlink</Button>)}
+            {habit && (<Button mode="tonal" onPress={() => setMarkHabitDialogVisible(true)}>Test</Button>)}
+            {!habit && (<Button mode="contained" onPress={linkHabit}>Link</Button>)}
           </Card.Actions>
         }
       />

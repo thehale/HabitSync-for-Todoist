@@ -1,9 +1,13 @@
 import { Task, TodoistActivity } from "../types";
 import fetchJSON from "./fetchJson";
 import { DAYS } from "./time";
+import { LOG } from "./lenador";
 
 export async function queryTasks(apiToken: string, since: Date): Promise<Task[]> {
   const activities = await queryActivities(apiToken, since);
+  if (activities.length === 0) {
+    LOG.info("No recently completed tasks");
+  }
   return activities.map(i => ({
     id: i.object_id,
     occurrenceId: i.object_id,

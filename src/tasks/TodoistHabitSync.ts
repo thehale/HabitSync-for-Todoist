@@ -1,8 +1,9 @@
 import { NativeModules } from "react-native";
 import { Storage } from "../lib/Storage";
 import { queryTasks } from "../lib/Todoist"
-import { normalize } from "../lib/normalize";
 import { MINUTES } from "../lib/time";
+import { LOG, StructuredLog } from "../lib/lenador";
+import { Task } from "../types";
 
 const { LoopHabitModule } = NativeModules;
 
@@ -20,27 +21,59 @@ const { LoopHabitModule } = NativeModules;
 const API_LAG_BUFFER = 30 * MINUTES;
 
 module.exports = async () => {
-  const apiToken = Storage.ApiKey.read();
-  const storedTasks = Storage.Tasks.read()
-  
-  const queryDate = new Date(Storage.LastSync.read().getTime() - API_LAG_BUFFER);
-  const recentlyCompletedTasks = await queryTasks(apiToken, queryDate);
-  const recentlyCompleted = new Map(recentlyCompletedTasks.map(t => [t.id, t]));
-  const habitCompletingTasks = storedTasks
-    .filter(stored => stored.habit !== undefined)
-    .filter(stored => recentlyCompleted.has(stored.id))
-    .filter(stored => recentlyCompleted.get(stored.id)!.completedAt > stored.completedAt)
+  await LOG.transaction(`sync-${new Date().toISOString()}`, sync);
+}
 
-  // @ts-ignore
-  habitCompletingTasks.forEach(async t => await LoopHabitModule.takeHabitAction(t.habit.id, t.habit.action));
-  console.debug(JSON.stringify({
-    message: 'Sync completed',
-    recentlyCompletedTasks,
-    recentlyCompletedTasksCount: recentlyCompletedTasks.length,
-    habitCompletingTasks,
-    habitCompletingTasksCount: habitCompletingTasks.length,
-  }));
-  
-  Storage.Tasks.write(normalize([...storedTasks, ...recentlyCompletedTasks]));
+async function sync() {
+  const apiToken = getAPIKey();
+  const lastSync = Storage.LastSync.read();
+  const queryDate = new Date(lastSync.getTime() - API_LAG_BUFFER);
+
+  LOG.record({ lastSync: lastSync.toISOString(), queryDate: queryDate.toISOString() });
+
+  const storedTasks = Storage.Tasks.read()
+  const storedMap = new Map(storedTasks.map(t => [t.id, t]));
+
+  const recentlyCompletedTasks = await queryTasks(apiToken, queryDate);
+  recentlyCompletedTasks
+    .filter(task => ensure(storedMap.has(task.id), "skip: not stored", { "task.id": task.id }))
+    .map(task => [task, storedMap.get(task.id)!])
+    .filter(([task, stored]) => ensure(stored.habit !== undefined, "skip: not linked", { "task.id": task.id }))
+    .filter(([task, stored]) => ensureCompletedSinceLastSync(task, stored))
+    .forEach(async ([task, stored]) => await recordHabitUpdate(task, stored.habit!.id, stored.habit!.action));
+
+  Storage.Tasks.write([...storedTasks, ...recentlyCompletedTasks]);
   Storage.LastSync.write(new Date())
+}
+
+function getAPIKey(): string {
+  const apiKey = Storage.ApiKey.read();
+  if (!apiKey) {
+    throw new Error("API key not set");
+  }
+  return apiKey;
+}
+
+function ensure(condition: boolean, message: string, attributes: StructuredLog = {}) {
+  if (!condition) {
+    LOG.info(message, attributes);
+  }
+  return condition;
+}
+
+function ensureCompletedSinceLastSync(task: Task, stored: Task): boolean {
+  return ensure(stored.completedAt < task.completedAt, "skip: already recorded", {
+    "task.id": task.id,
+    "task.completedAt": task.completedAt.toISOString(),
+    "stored.completedAt": stored.completedAt.toISOString()
+  })
+}
+
+async function recordHabitUpdate(task: Task, habitId: string, habitAction: string) {
+  await LoopHabitModule.takeHabitAction(habitId, habitAction);
+  LOG.info("habit updated", {
+    "task.id": task.id,
+    "habit.id": habitId,
+    "habit.action": habitAction
+  });
 }
