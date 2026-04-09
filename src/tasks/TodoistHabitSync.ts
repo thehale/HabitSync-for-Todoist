@@ -33,8 +33,10 @@ async function sync() {
 
   const storedTasks = Storage.Tasks.read()
   const storedMap = new Map(storedTasks.map(t => [t.id, t]));
-
+  LOG.record({ storedTasks: redactTasks(storedTasks) });
+  
   const recentlyCompletedTasks = await queryTasks(apiToken, queryDate);
+  LOG.record({ recentlyCompletedTasks: redactTasks(recentlyCompletedTasks) });
   recentlyCompletedTasks
     .filter(task => ensure(storedMap.has(task.id), "skip: not stored", { "task.id": task.id }))
     .map(task => [task, storedMap.get(task.id)!])
@@ -54,6 +56,15 @@ function getAPIKey(): string {
   return apiKey;
 }
 
+function redactTasks(tasks: Task[]): StructuredLog {
+  return tasks.map(t => ({
+    id: t.id,
+    completedAt: new Date(t.completedAt ?? 0).toISOString(),
+    ignored: t.ignored,
+    habit: t.habit ? { id: t.habit.id, action: t.habit.action } : undefined,
+  }));
+}
+
 function ensure(condition: boolean, message: string, attributes: StructuredLog = {}) {
   if (!condition) {
     LOG.info(message, attributes);
@@ -62,8 +73,8 @@ function ensure(condition: boolean, message: string, attributes: StructuredLog =
 }
 
 function ensureCompletedSinceLastSync(task: Task, stored: Task): boolean {
-  const storedCompletedAt = stored.completedAt ?? new Date(0);
-  const taskCompletedAt = task.completedAt ?? new Date(0);
+  const storedCompletedAt = new Date(stored.completedAt ?? 0);
+  const taskCompletedAt = new Date(task.completedAt ?? 0);
   return ensure(storedCompletedAt < taskCompletedAt, "skip: already recorded", {
     "task.id": task.id,
     "stored.completedAt": storedCompletedAt.toISOString(),
@@ -72,10 +83,10 @@ function ensureCompletedSinceLastSync(task: Task, stored: Task): boolean {
 }
 
 async function recordHabitUpdate(task: Task, habitId: string, habitAction: string) {
-  await LoopHabitModule.takeHabitAction(habitId, habitAction);
   LOG.info("habit updated", {
     "task.id": task.id,
     "habit.id": habitId,
     "habit.action": habitAction
   });
+  await LoopHabitModule.takeHabitAction(habitId, habitAction);
 }
