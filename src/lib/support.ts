@@ -13,7 +13,7 @@ export function requestSupport(logs: StructuredLog[]) {
 	const body = (
 		"Please describe the issue you are seeing:" + 
 		"\n\n\n\n\n" + 
-		history(logs)
+		history([...logs].reverse())
 	);
 
 	sendEmail(recipient, subject, body);
