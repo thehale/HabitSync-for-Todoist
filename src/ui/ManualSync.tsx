@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 
 import { Button, Dialog, Text } from 'react-native-expressive';
-import { Linking, View } from 'react-native';
+import { Linking, StyleSheet, View } from 'react-native';
 
 const runSync = require('../tasks/TodoistHabitSync');
 
 export default function ManualSync() {
   const [showDialog, setDialogVisible] = useState(false);
   return (
-    <View>
-      <Button mode="tonal" onPress={() => setDialogVisible(true)}>Run a Habit Sync</Button>
+    <View style={styles.container}>
+      <Button mode="tonal" onPress={() => setDialogVisible(true)}>Sync Now</Button>
       <SyncDialog
         visible={showDialog}
         onDismiss={() => setDialogVisible(false)}
@@ -53,3 +53,7 @@ function SyncDialog({ visible, onDismiss }: SyncDialogProps) {
     />
   );
 }
+
+const styles = StyleSheet.create({
+  container: { width: '100%' },
+});

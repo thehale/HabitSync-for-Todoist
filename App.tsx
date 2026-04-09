@@ -2,10 +2,9 @@ import { StyleSheet, View } from 'react-native';
 
 import { Divider, useMaterialTheme } from 'react-native-expressive';
 import HabitList from './src/ui/HabitList';
-import ManualSync from './src/ui/ManualSync';
 import React from 'react';
-import { TokenManagement } from './src/ui/TokenManagement';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import Actions from './src/ui/Actions';
 
 export default function App() {
   const { theme } = useMaterialTheme();
@@ -13,12 +12,9 @@ export default function App() {
     <SafeAreaProvider>
       <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
         <HabitList />
-        <View style={styles.spacing}>
-          <TokenManagement />
-        </View>
         <Divider />
         <View style={styles.spacing}>
-          <ManualSync />
+          <Actions />
         </View>
       </SafeAreaView>
     </SafeAreaProvider>
