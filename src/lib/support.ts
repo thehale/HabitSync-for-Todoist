@@ -27,15 +27,41 @@ function history(logs: StructuredLog[]) {
 	}
 }
 
+// RFC 6068 defines no maximum length for `mailto:` URIs.
+//
+// In practice, Android passes the body via Intent EXTRA_TEXT, so the limiting
+// factor is the Binder IPC transaction buffer (~1 MB pool).  Most email
+// clients handle several hundred KB of body text without issue.
+//
+// We limit to 50,000 raw characters (≈ ~150 KB after worst-case-scenario
+// encodeURIComponent) and reduce the limit on each retry so that restrictive
+// OEM/ROM builds still get as many logs as possible rather than nothing at all.
+//
+// Sources:
+//   - RFC 6068 §2 (no length limit): https://www.rfc-editor.org/rfc/rfc6068
+//   - Android Binder limit (~1 MB): https://developer.android.com/reference/android/os/TransactionTooLargeException
+const MAX_BODY_LENGTH = 50000;
+const MAX_ATTEMPTS = 10;
+
 async function sendEmail(recipient: string, subject: string, body: string) {
-	try {
-		await Linking.openURL(mailto(recipient, subject, body));
-	} catch {
-		Alert.alert('Could not open your email app.');
+	let attempts = 0;
+	let noEmailSent = true;
+	
+	while (noEmailSent && attempts < MAX_ATTEMPTS) {
+		try {
+			let limit = MAX_BODY_LENGTH - attempts * (MAX_BODY_LENGTH / MAX_ATTEMPTS);
+			await Linking.openURL(mailto(recipient, subject, body.slice(0, limit)));
+			noEmailSent = false;
+		} catch (error) {
+			attempts++;
+		}
+	}
+	
+	if (noEmailSent) {
+		Alert.alert(`Could not open your email app.\n\nPlease email ${recipient} directly.`);
 	}
 }
 
 function mailto(recipient: string, subject: string, body: string) {
-	const limitedBody = body.slice(0, 12000);
-	return `mailto:${recipient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(limitedBody)}`;
+	return `mailto:${recipient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }
