@@ -45,7 +45,7 @@ async function sendEmail(recipient: string, subject: string, body: string) {
 	let limit = MAX_BODY_LENGTH;
 	while (limit > 0) {
 		try {
-			await Linking.openURL(mailto(recipient, subject, body, limit));
+			await Linking.openURL(mailto(recipient, subject, body.slice(0, limit)));
 			return;
 		} catch {
 			limit = Math.floor(limit / 2);
@@ -54,7 +54,6 @@ async function sendEmail(recipient: string, subject: string, body: string) {
 	Alert.alert('Could not open your email app.');
 }
 
-function mailto(recipient: string, subject: string, body: string, limit: number) {
-	const limitedBody = body.slice(0, limit);
-	return `mailto:${recipient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(limitedBody)}`;
+function mailto(recipient: string, subject: string, body: string) {
+	return `mailto:${recipient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }
