@@ -33,7 +33,9 @@ async function sync() {
 
   const storedTasks = Storage.Tasks.read()
   const storedMap = new Map(storedTasks.map(t => [t.id, t]));
-  LOG.record({ storedTasks: redactTasks(storedTasks) });
+  if (__DEV__) {
+    LOG.record({ storedTasks: redactTasks(storedTasks) });
+  }
   
   const recentlyCompletedTasks = await queryTasks(apiToken, queryDate);
   LOG.record({ recentlyCompletedTasks: redactTasks(recentlyCompletedTasks) });
