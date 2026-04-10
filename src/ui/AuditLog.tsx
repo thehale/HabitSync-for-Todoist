@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { Divider, Text } from 'react-native-expressive';
 import { StructuredLog } from '../lib/lenador';
 import { humanSummary } from '../lib/history';
@@ -16,12 +16,14 @@ export default function AuditLog({ logs }: AuditLogProps) {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      {entries.map((entry, index) => (
-        <View key={index} style={styles.item}>
-          <Text>{entry}</Text>
-          {(index < entries.length - 1) && <Divider />}
-        </View>
-      ))}
+      <Pressable>
+        {entries.map((entry, index) => (
+          <View key={index} style={styles.item}>
+            <Text>{entry}</Text>
+            {(index < entries.length - 1) && <Divider />}
+          </View>
+        ))}
+      </Pressable>
     </ScrollView>
   );
 }
