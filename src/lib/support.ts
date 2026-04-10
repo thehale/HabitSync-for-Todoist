@@ -36,6 +36,20 @@ async function sendEmail(recipient: string, subject: string, body: string) {
 }
 
 function mailto(recipient: string, subject: string, body: string) {
-	const limitedBody = body.slice(0, 12000);
+	// RFC 6068 defines no maximum length for mailto: URIs.
+	// In practice, Android passes the body via Intent EXTRA_TEXT, so the limiting
+	// factor is the Binder IPC transaction buffer (~1 MB total).  Most email
+	// clients handle several hundred KB of body text without issue.
+	// We cap at 50 000 raw characters (≈ ~150 KB after encodeURIComponent in the
+	// worst case) as a conservative upper bound.  Some OEM or ROM builds may
+	// enforce a smaller limit; if the Intent is rejected the user will see
+	// "Could not open your email app" and can try again — partial logs are
+	// better than no logs at all.
+	// Sources:
+	//   - RFC 6068 §2 (no length limit): https://www.rfc-editor.org/rfc/rfc6068
+	//   - Android Binder limit (~1 MB): https://developer.android.com/reference/android/os/TransactionTooLargeException
+	//   - React Native Linking.openURL on Android uses startActivity with the
+	//     full URI as Intent data: https://github.com/facebook/react-native/blob/main/packages/react-native/Libraries/Linking/Linking.android.js
+	const limitedBody = body.slice(0, 50000);
 	return `mailto:${recipient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(limitedBody)}`;
 }
