@@ -40,7 +40,7 @@ function mailto(recipient: string, subject: string, body: string) {
 	// In practice, Android passes the body via Intent EXTRA_TEXT, so the limiting
 	// factor is the Binder IPC transaction buffer (~1 MB total).  Most email
 	// clients handle several hundred KB of body text without issue.
-	// We cap at 50 000 raw characters (≈ ~150 KB after encodeURIComponent in the
+	// We cap at 50,000 raw characters (≈ ~150 KB after encodeURIComponent in the
 	// worst case) as a conservative upper bound.  Some OEM or ROM builds may
 	// enforce a smaller limit; if the Intent is rejected the user will see
 	// "Could not open your email app" and can try again — partial logs are

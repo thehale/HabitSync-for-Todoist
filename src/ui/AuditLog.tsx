@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { FlatList, Pressable, StyleSheet, View } from 'react-native';
 import { Divider, Text } from 'react-native-expressive';
 import { StructuredLog } from '../lib/lenador';
 import { humanSummary } from '../lib/history';
@@ -15,24 +15,31 @@ export default function AuditLog({ logs }: AuditLogProps) {
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      <Pressable>
-        {entries.map((entry, index) => (
-          <View key={index} style={styles.item}>
-            <Text>{entry}</Text>
-            {(index < entries.length - 1) && <Divider />}
-          </View>
-        ))}
-      </Pressable>
-    </ScrollView>
+    <FlatList
+      style={styles.container}
+      contentContainerStyle={styles.contentContainer}
+      data={entries}
+      keyExtractor={(_, index) => String(index)}
+      renderItem={({ item }) => (
+        <Pressable>
+          <Text>{item}</Text>
+        </Pressable>
+      )}
+      ItemSeparatorComponent={() => (
+        <View style={styles.separator}>
+          <Divider />
+        </View>
+      )}
+    />
   );
 }
 
 const styles = StyleSheet.create({
   container: { height: 300 },
   contentContainer: {
-    gap: 12,
     paddingVertical: 4,
   },
-  item: { gap: 12 }
+  separator: {
+    marginVertical: 12,
+  },
 });
