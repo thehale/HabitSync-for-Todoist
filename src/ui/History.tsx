@@ -34,7 +34,7 @@ function HistoryDialog({ visible, onDismiss }: HistoryDialogProps) {
         <Dialog.Actions>
           <Button onPress={onDismiss}>Close</Button>
           <Button onPress={() => requestSupport(logs)}>
-            Share with Support
+            Email Support
           </Button>
         </Dialog.Actions>
       }

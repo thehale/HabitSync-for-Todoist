@@ -1,6 +1,6 @@
 import React from 'react';
-import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
-import { Divider, Text } from 'react-native-expressive';
+import { Pressable, ScrollView, Share, StyleSheet, View } from 'react-native';
+import { Button, Divider, Text } from 'react-native-expressive';
 import { StructuredLog } from '../lib/lenador';
 import { humanSummary } from '../lib/history';
 
@@ -8,24 +8,38 @@ interface AuditLogProps {
   logs: StructuredLog[];
 }
 export default function AuditLog({ logs }: AuditLogProps) {
-  const entries = [...logs].reverse().map(log => humanSummary(log));
-  
-  if (entries.length === 0) {
+  if (logs.length === 0) {
     return <Text>Nothing yet!</Text>;
   }
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       <Pressable>
-        {entries.map((entry, index) => (
+        {logs.reverse().map((log, index) => (
           <View key={index} style={styles.item}>
-            <Text>{entry}</Text>
-            {(index < entries.length - 1) && <Divider />}
+            <LogEntry log={log} />
+            {(index < logs.length - 1) && <Divider />}
           </View>
         ))}
       </Pressable>
     </ScrollView>
   );
+}
+
+function LogEntry({ log }: { log: StructuredLog }) {
+  return (
+    <View style={styles.entry}>
+      <Text>{humanSummary(log)}</Text>
+      <Button onPress={() => share(log)}>Share</Button>
+    </View>
+  )
+}
+
+function share(log: StructuredLog) {
+  Share.share({
+    title: 'Habit Sync Log Entry',
+    message: JSON.stringify(log, null, 2),
+  })
 }
 
 const styles = StyleSheet.create({
@@ -34,5 +48,9 @@ const styles = StyleSheet.create({
     gap: 12,
     paddingVertical: 4,
   },
-  item: { gap: 12 }
+  item: { gap: 4, paddingBottom: 4 },
+  entry: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  }
 });
