@@ -49,7 +49,7 @@ async function sendEmail(recipient: string, subject: string, body: string) {
 	
 	while (noEmailSent && attempts < MAX_ATTEMPTS) {
 		try {
-			let limit = MAX_BODY_LENGTH - attempts * (MAX_BODY_LENGTH / MAX_ATTEMPTS);
+			let limit = MAX_BODY_LENGTH - MAX_BODY_LENGTH * (attempts / MAX_ATTEMPTS);
 			await Linking.openURL(mailto(recipient, subject, body.slice(0, limit)));
 			noEmailSent = false;
 		} catch (error) {
