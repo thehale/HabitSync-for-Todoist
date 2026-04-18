@@ -1,5 +1,8 @@
 import { MMKV } from "react-native-mmkv";
 import { Task } from "../types";
+import { HOURS } from "./time";
+import { StructuredLog } from "./lenador";
+import { normalize } from "./normalize";
 
 const mmkv = new MMKV();
 const _storage = {
@@ -14,6 +17,7 @@ const _storage = {
 const API_KEY_STORAGE_ID = 'todoist.apiKey'
 const TASKS_STORAGE_ID = 'todoist.tasks'
 const LAST_SYNC_DATE_STORAGE_ID = 'todoist.lastSync'
+const LOGS_STORAGE_ID = 'logs.history'
 
 
 export const Storage = {
@@ -24,11 +28,12 @@ export const Storage = {
   },
   Tasks: {
     read: (): Task[] => {
-      const tasks = _storage.read(TASKS_STORAGE_ID)
-      return tasks ? JSON.parse(tasks) : []
+      const raw = _storage.read(TASKS_STORAGE_ID)
+      const tasks = raw ? JSON.parse(raw) : [];
+      return normalize(tasks);
     },
     write: (tasks: Task[]) =>
-      _storage.write(TASKS_STORAGE_ID, JSON.stringify(tasks))
+      _storage.write(TASKS_STORAGE_ID, JSON.stringify(normalize(tasks)))
   },
   LastSync: {
     read: (): Date => {
@@ -37,5 +42,22 @@ export const Storage = {
     },
     write: (date: Date) => 
       _storage.write(LAST_SYNC_DATE_STORAGE_ID, JSON.stringify(date))
+  },
+  Logs: {
+    add: (log: StructuredLog) => {
+      const now = new Date().toISOString();
+      const logs = Storage.Logs.read();
+
+      logs.push({ timestamp: now, ...log });
+
+      _storage.write(LOGS_STORAGE_ID, JSON.stringify(logs));
+    },
+    read: (): StructuredLog[] => {
+      const raw = _storage.read(LOGS_STORAGE_ID);
+      const logs = (raw ? JSON.parse(raw) : []) as StructuredLog[];
+      
+      const cutoff = new Date(Date.now() - 48 * HOURS).toISOString();
+      return logs.filter(entry => entry.timestamp > cutoff);
+    }
   }
 }

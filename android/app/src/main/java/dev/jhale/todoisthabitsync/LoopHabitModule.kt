@@ -7,9 +7,7 @@
 package dev.jhale.todoisthabitsync
 
 import android.app.Activity
-import android.app.NotificationManager
 import android.content.ComponentName
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -81,15 +79,6 @@ class LoopHabitModule(context: ReactApplicationContext) : ReactContextBaseJavaMo
             component = ComponentName("org.isoron.uhabits", "org.isoron.uhabits.automation.EditSettingActivity")
         }
         reactApplicationContext.startActivityForResult(intent, 1234, Bundle())
-    }
-
-    @ReactMethod
-    fun sendNewHabitNotification(count: Int, promise: Promise) {
-        Log.d("LoopHabitModule", "sending new habit notification for $count task(s)")
-        val notification = NewHabitNotification.create(reactApplicationContext, count)
-        val manager = reactApplicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        manager.notify(NewHabitNotification.NOTIFICATION_ID, notification)
-        promise.resolve(true)
     }
 
     @ReactMethod
