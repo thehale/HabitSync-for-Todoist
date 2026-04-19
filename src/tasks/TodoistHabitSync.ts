@@ -6,6 +6,7 @@ import { LOG, StructuredLog } from "../lib/lenador";
 import { Task } from "../types";
 
 const { LoopHabitModule } = NativeModules;
+const { NotificationModule } = NativeModules;
 
 /*
   Todoist sometimes has a delay between a task's completion
@@ -19,6 +20,10 @@ const { LoopHabitModule } = NativeModules;
   completed after the last sync time that we have saved.
  */
 const API_LAG_BUFFER = 30 * MINUTES;
+
+const NEW_HABIT_CHANNEL_ID = "new_habit_channel";
+const NEW_HABIT_CHANNEL_NAME = "New Habits";
+const NEW_HABIT_NOTIFICATION_ID = 2;
 
 module.exports = async () => {
   await LOG.transaction(`sync-${new Date().toISOString()}`, sync);
@@ -45,6 +50,17 @@ async function sync() {
     .filter(([task, stored]) => ensure(stored.habit !== undefined, "skip: not linked", { "task.id": task.id }))
     .filter(([task, stored]) => ensureCompletedSinceLastSync(task, stored))
     .forEach(async ([task, stored]) => await recordHabitUpdate(task, stored.habit!.id, stored.habit!.action));
+
+  const newUnlinkedTasks = recentlyCompletedTasks.filter(
+    task => !storedMap.has(task.id)
+  );
+  if (newUnlinkedTasks.length > 0) {
+    try {
+      await notifyNewHabits(newUnlinkedTasks);
+    } catch (e) {
+      LOG.info("failed to send new habit notification", { error: String(e) });
+    }
+  }
 
   Storage.Tasks.write([...storedTasks, ...recentlyCompletedTasks]);
   Storage.LastSync.write(new Date())
@@ -91,4 +107,22 @@ async function recordHabitUpdate(task: Task, habitId: string, habitAction: strin
     "habit.action": habitAction
   });
   await LoopHabitModule.takeHabitAction(habitId, habitAction);
+}
+
+async function notifyNewHabits(tasks: Task[]) {
+  const count = tasks.length;
+  const title = count === 1
+    ? `Link "${tasks[0].title}" to a habit`
+    : `${count} recurring tasks need to be linked`;
+  const body = count === 1
+    ? "Tap to open the app and link this recurring task to a habit."
+    : tasks.map(t => `• ${t.title}`).join("\n");
+  LOG.info("new habits found", { taskCount: count });
+  await NotificationModule.sendNotification(
+    NEW_HABIT_CHANNEL_ID,
+    NEW_HABIT_CHANNEL_NAME,
+    NEW_HABIT_NOTIFICATION_ID,
+    title,
+    body,
+  );
 }
