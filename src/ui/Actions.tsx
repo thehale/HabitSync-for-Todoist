@@ -1,6 +1,7 @@
 import { StyleSheet, View } from 'react-native';
 import ManualSync from './ManualSync';
 import History from './History';
+import Themes from './Themes';
 import { useApiKey } from './useStorage';
 import TokenInput from './TokenInput';
 import { s } from 'react-native-expressive';
@@ -13,6 +14,7 @@ export default function Actions() {
     return (
       <View style={styles.actions}>
         <View style={styles.left}>
+          <Themes />
         </View>
         <View style={styles.center}>
           <ManualSync onDisable={() => setToken('')} />
