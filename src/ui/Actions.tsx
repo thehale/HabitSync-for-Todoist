@@ -1,7 +1,6 @@
 import { StyleSheet, View } from 'react-native';
 import ManualSync from './ManualSync';
 import History from './History';
-import Disable from './Disable';
 import { useApiKey } from './useStorage';
 import TokenInput from './TokenInput';
 
@@ -13,10 +12,9 @@ export default function Actions() {
     return (
       <View style={styles.actions}>
         <View style={styles.left}>
-          <Disable setToken={setToken} />
         </View>
         <View style={styles.center}>
-          <ManualSync />
+          <ManualSync onDisable={() => setToken('')} />
         </View>
         <View style={styles.right}>
           <History />

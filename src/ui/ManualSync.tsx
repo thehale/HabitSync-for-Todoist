@@ -5,13 +5,17 @@ import { Linking, StyleSheet, View } from 'react-native';
 
 const runSync = require('../tasks/TodoistHabitSync');
 
-export default function ManualSync() {
+interface ManualSyncProps {
+  onDisable: () => void;
+}
+export default function ManualSync({ onDisable }: ManualSyncProps) {
   const [showDialog, setDialogVisible] = useState(false);
   return (
     <View style={styles.container}>
-      <Button mode="tonal" onPress={() => setDialogVisible(true)}>Sync Now</Button>
+      <Button mode="tonal" onPress={() => setDialogVisible(true)}>Sync</Button>
       <SyncDialog
         visible={showDialog}
+        onDisable={onDisable}
         onDismiss={() => setDialogVisible(false)}
       />
     </View>
@@ -20,9 +24,10 @@ export default function ManualSync() {
 
 interface SyncDialogProps {
   visible: boolean;
+  onDisable: () => void;
   onDismiss: () => void;
 }
-function SyncDialog({ visible, onDismiss }: SyncDialogProps) {
+function SyncDialog({ visible, onDisable, onDismiss }: SyncDialogProps) {
   return (
     <Dialog visible={visible} onDismiss={onDismiss}
       title="What is a habit sync?"
@@ -40,14 +45,21 @@ function SyncDialog({ visible, onDismiss }: SyncDialogProps) {
           <Button mode="tonal" onPress={() => Linking.sendIntent("android.settings.IGNORE_BATTERY_OPTIMIZATION_SETTINGS")}>Battery Settings</Button>
           <Text>
             {'\n'}
-            You can also manually trigger a sync by pressing the button below.
+            Syncs can be disabled by clearing the API token. You'll have to re-add your token to enable syncs again.
+            {'\n'}
           </Text>
+          <Button mode="contained" intent="danger" onPress={() => { onDisable(); onDismiss(); }}>Disable Sync</Button>
+          <Text>
+            {'\n'}
+            You can also run a sync on demand.
+            {'\n'}
+          </Text>
+          <Button mode="contained" onPress={() => { runSync(); onDismiss(); }}>Sync Now</Button>
         </>
       }
       actions={
         <Dialog.Actions>
-          <Button onPress={onDismiss}>Cancel</Button>
-          <Button mode="contained" onPress={() => { runSync(); onDismiss(); }}>Run Sync</Button>
+          <Button onPress={onDismiss}>Close</Button>
         </Dialog.Actions>
       }
     />
