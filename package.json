@@ -3,8 +3,11 @@
   "version": "0.5.4",
   "private": true,
   "scripts": {
+    "env": "npx dotenv-cli -e fastlane/.env --",
     "android": "react-native run-android",
+    "android:release": "npm run env -- react-native run-android --mode release",
     "ios": "react-native run-ios",
+    "ios:release": "npm run env -- react-native run-ios --mode release",
     "pods": "cd ios && pod install && cd ..",
     "lint": "eslint .",
     "start": "react-native start",
