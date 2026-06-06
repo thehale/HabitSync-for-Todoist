@@ -1,6 +1,6 @@
 import { Alert, NativeModules, StyleSheet, View } from 'react-native';
 import { LoopHabit, PersistentTask } from '../types';
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 
 import { Button, Card, Dialog, s, Text } from 'react-native-expressive';
 import { useTodoistTasks } from './useTodoistTasks';
@@ -35,25 +35,63 @@ interface AllHabitsProps {
   tasks: PersistentTask[];
 }
 function AllHabits({ tasks }: AllHabitsProps) {
-  const renderItem = useCallback(({ item }: { item: PersistentTask }) => <Habit item={item} />, []);
+  const task = useRef<PersistentTask>(null);
+
+  const ignoreDialog = useDialog({
+    task,
+    confirm: useCallback(() => task.current?.ignore(), [task]),
+  });
+
+  const renderItem = useCallback(({ item }: { item: PersistentTask }) => (
+    <Habit item={item} onRequestIgnore={ignoreDialog.request} />
+  ), [ignoreDialog]);
   const keyExtractor = useCallback((item: PersistentTask) => item.id, []);
+
   return (
-    <LegendList
-      data={tasks}
-      renderItem={renderItem}
-      keyExtractor={keyExtractor}
-      contentContainerStyle={styles.contentContainer}
-    />
+    <>
+      <LegendList
+        data={tasks}
+        renderItem={renderItem}
+        keyExtractor={keyExtractor}
+        contentContainerStyle={styles.contentContainer}
+      />
+      <IgnoreDialog
+        visible={ignoreDialog.visible}
+        onAccept={ignoreDialog.confirm}
+        onDismiss={() => ignoreDialog.setVisible(false)}
+      />
+    </>
   );
+}
+
+interface useDialogProps {
+  task: React.RefObject<PersistentTask | null>;
+  confirm: () => void;
+}
+function useDialog({ task, confirm }: useDialogProps) {
+  const [visible, setVisible] = useState(false);
+  const request = useCallback((item: PersistentTask) => {
+    task.current = item;
+    setVisible(true);
+  }, [task]);
+
+  const dialog = useMemo(() => ({
+    visible,
+    setVisible,
+    request,
+    confirm
+  }), [visible, request, confirm]);
+
+  return dialog;
 }
 
 interface HabitProps {
   item: PersistentTask;
+  onRequestIgnore: (item: PersistentTask) => void;
 }
-function Habit({ item }: HabitProps) {
+function Habit({ item, onRequestIgnore }: HabitProps) {
   const [showMarkHabitDialog, setMarkHabitDialogVisible] = useState(false);
   const [showDeleteDialog, setDeleteDialogVisible] = useState(false);
-  const [showIgnoreDialog, setIgnoreDialogVisible] = useState(false);
   const [showUnlinkDialog, setUnlinkDialogVisible] = useState(false);
   const [habit, setHabit] = useState<LoopHabit | undefined>(item.habit);
   const unlinkHabit = () => {
@@ -95,7 +133,7 @@ function Habit({ item }: HabitProps) {
         actions={
           <Card.Actions>
             <Button mode="text" intent="danger" onPress={() => setDeleteDialogVisible(true)}>Delete</Button>
-            {!item.ignored && !item.habit && <Button mode="text" onPress={() => setIgnoreDialogVisible(true)}>Ignore</Button>}
+            {!item.ignored && !item.habit && <Button mode="text" onPress={() => onRequestIgnore(item)}>Ignore</Button>}
             {habit && (<Button mode="text" intent="danger" onPress={() => setUnlinkDialogVisible(true)}>Unlink</Button>)}
             {habit && (<Button mode="tonal" onPress={() => setMarkHabitDialogVisible(true)}>Test</Button>)}
             {!habit && (<Button mode="contained" onPress={linkHabit}>Link</Button>)}
@@ -106,11 +144,6 @@ function Habit({ item }: HabitProps) {
         visible={showDeleteDialog}
         onAccept={() => item.delete()}
         onDismiss={() => setDeleteDialogVisible(false)}
-      />
-      <IgnoreDialog
-        visible={showIgnoreDialog}
-        onAccept={() => item.ignore()}
-        onDismiss={() => setIgnoreDialogVisible(false)}
       />
       <UnlinkHabitDialog
         visible={showUnlinkDialog}
