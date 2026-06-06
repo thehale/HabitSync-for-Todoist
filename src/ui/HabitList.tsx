@@ -49,6 +49,19 @@ function AllHabits({ tasks }: AllHabitsProps) {
     task,
     confirm: useCallback(() => task.current?.setHabit(undefined), [task]),
   });
+  const markDialog = useDialog({
+    task,
+    confirm: useCallback(async () => {
+      const habit = task.current?.habit;
+      if (!habit) return;
+      try {
+        await LoopHabitModule.takeHabitAction(habit.id, habit.action);
+      } catch (e: any) {
+        Alert.alert(e.message);
+        console.log(JSON.stringify(e));
+      }
+    }, [task]),
+  });
 
   const renderItem = useCallback(({ item }: { item: PersistentTask }) => (
     <Habit 
@@ -56,8 +69,9 @@ function AllHabits({ tasks }: AllHabitsProps) {
       onRequestIgnore={ignoreDialog.request} 
       onRequestDelete={deleteDialog.request}
       onRequestUnlink={unlinkDialog.request}
+      onRequestMark={markDialog.request}
     />
-  ), [ignoreDialog, deleteDialog, unlinkDialog]);
+  ), [ignoreDialog, deleteDialog, unlinkDialog, markDialog]);
   const keyExtractor = useCallback((item: PersistentTask) => item.id, []);
 
   return (
@@ -82,6 +96,11 @@ function AllHabits({ tasks }: AllHabitsProps) {
         visible={unlinkDialog.visible}
         onAccept={unlinkDialog.confirm}
         onDismiss={() => unlinkDialog.setVisible(false)}
+      />
+      <MarkHabitDialog
+        visible={markDialog.visible}
+        onAccept={markDialog.confirm}
+        onDismiss={() => markDialog.setVisible(false)}
       />
     </>
   );
@@ -113,9 +132,9 @@ interface HabitProps {
   onRequestDelete: (item: PersistentTask) => void;
   onRequestIgnore: (item: PersistentTask) => void;
   onRequestUnlink: (item: PersistentTask) => void;
+  onRequestMark: (item: PersistentTask) => void;
 }
-function Habit({ item, onRequestIgnore, onRequestDelete, onRequestUnlink }: HabitProps) {
-  const [showMarkHabitDialog, setMarkHabitDialogVisible] = useState(false);
+function Habit({ item, onRequestIgnore, onRequestDelete, onRequestUnlink, onRequestMark }: HabitProps) {
   const [habit, setHabit] = useState<LoopHabit | undefined>(item.habit);
   const linkHabit = useCallback(async () => {
     try {
@@ -132,39 +151,21 @@ function Habit({ item, onRequestIgnore, onRequestDelete, onRequestUnlink }: Habi
       console.log(JSON.stringify(e));
     }
   }, [item]);
-  const markHabit = useCallback(async () => {
-    if (!habit) {
-      return;
-    }
-    try {
-      await LoopHabitModule.takeHabitAction(habit.id, habit.action);
-    } catch (e: any) {
-      Alert.alert(e.message);
-      console.log(JSON.stringify(e));
-    }
-  }, [habit]);
   const content = item.ignored ? 'IGNORED' : habit ? `Loop Habit > ${habit.name}` : null;
   return (
-    <>
-      <Card
-        title={item.title}
-        content={content}
-        actions={
-          <Card.Actions>
-            <Button mode="text" intent="danger" onPress={() => onRequestDelete(item)}>Delete</Button>
-            {!item.ignored && !item.habit && <Button mode="text" onPress={() => onRequestIgnore(item)}>Ignore</Button>}
-            {habit && (<Button mode="text" intent="danger" onPress={() => onRequestUnlink(item)}>Unlink</Button>)}
-            {habit && (<Button mode="tonal" onPress={() => setMarkHabitDialogVisible(true)}>Test</Button>)}
-            {!habit && (<Button mode="contained" onPress={linkHabit}>Link</Button>)}
-          </Card.Actions>
-        }
-      />
-      <MarkHabitDialog
-        visible={showMarkHabitDialog}
-        onAccept={markHabit}
-        onDismiss={() => setMarkHabitDialogVisible(false)}
-      />
-    </>
+    <Card
+      title={item.title}
+      content={content}
+      actions={
+        <Card.Actions>
+          <Button mode="text" intent="danger" onPress={() => onRequestDelete(item)}>Delete</Button>
+          {!item.ignored && !item.habit && <Button mode="text" onPress={() => onRequestIgnore(item)}>Ignore</Button>}
+          {habit && (<Button mode="text" intent="danger" onPress={() => onRequestUnlink(item)}>Unlink</Button>)}
+          {habit && (<Button mode="tonal" onPress={() => onRequestMark(item)}>Test</Button>)}
+          {!habit && (<Button mode="contained" onPress={linkHabit}>Link</Button>)}
+        </Card.Actions>
+      }
+    />
   );
 }
 
