@@ -3,6 +3,7 @@ import ManualSync from './ManualSync';
 import History from './History';
 import { useApiKey } from './useStorage';
 import TokenInput from './TokenInput';
+import { s } from 'react-native-expressive';
 
 export default function Actions() {
   const [token, setToken] = useApiKey();
@@ -28,7 +29,7 @@ const styles = StyleSheet.create({
   actions: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    gap: 8,
+    gap: s.space.default,
   },
   left: { flex: 1, width: '100%', alignItems: 'flex-start' },
   center: { flex: 2, width: '100%', alignItems: 'center' },

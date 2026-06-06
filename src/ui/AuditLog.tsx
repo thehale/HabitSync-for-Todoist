@@ -1,6 +1,6 @@
 import React from 'react';
 import { Pressable, ScrollView, Share, StyleSheet, View } from 'react-native';
-import { Button, Divider, Text } from 'react-native-expressive';
+import { Button, Divider, s, Text } from 'react-native-expressive';
 import { StructuredLog } from '../lib/lenador';
 import { humanSummary } from '../lib/history';
 
@@ -45,10 +45,10 @@ function share(log: StructuredLog) {
 const styles = StyleSheet.create({
   container: { height: 300 },
   contentContainer: {
-    gap: 12,
-    paddingVertical: 4,
+    gap: s.space.default,
+    paddingVertical: s.space.half,
   },
-  item: { gap: 4, paddingBottom: 4 },
+  item: { gap: s.space.half, paddingBottom: s.space.half },
   entry: {
     flexDirection: 'row',
     justifyContent: 'space-between',

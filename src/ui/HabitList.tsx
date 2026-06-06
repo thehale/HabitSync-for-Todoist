@@ -2,7 +2,7 @@ import { Alert, FlatList, NativeModules, StyleSheet, View } from 'react-native';
 import { LoopHabit, PersistentTask } from '../types';
 import { useCallback, useState } from 'react';
 
-import { Button, Card, Dialog, Text } from 'react-native-expressive';
+import { Button, Card, Dialog, s, Text } from 'react-native-expressive';
 import { useTodoistTasks } from './useTodoistTasks';
 
 const { LoopHabitModule } = NativeModules;
@@ -203,7 +203,7 @@ function HabitList() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  contentContainer: { gap: 8, padding: 8 },
+  contentContainer: { gap: s.space.default, padding: s.space.default },
   empty: { flex: 1, justifyContent: 'center', marginHorizontal: "10%" },
 });
 
