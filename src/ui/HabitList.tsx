@@ -34,10 +34,11 @@ interface AllHabitsProps {
   tasks: PersistentTask[];
 }
 function AllHabits({ tasks }: AllHabitsProps) {
+  const renderItem = useCallback(({ item }: { item: PersistentTask }) => <Habit item={item} />, []);
   return (
     <FlatList
       data={tasks}
-      renderItem={({ item }) => <Habit item={item} />}
+      renderItem={renderItem}
       keyExtractor={item => item.id}
       contentContainerStyle={styles.contentContainer}
     />
