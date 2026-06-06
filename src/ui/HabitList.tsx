@@ -11,25 +11,36 @@ export default function HabitList() {
   const tasks = useTodoistTasks();
   return (
     <View style={styles.container}>
-      {tasks.length === 0 ? (
-        <View style={styles.empty}>
-          <Text>
-            <Text>No recently completed recurring tasks found in Todoist.</Text>
-            <Text>{'\n\n'}</Text>
-            <Text>Make sure you've set your API token.</Text>
-            <Text>{'\n\n'}</Text>
-            <Text>Also, try closing and re-opening the app.</Text>
-          </Text>
-        </View>
-      ) : (
-        <FlatList
-          data={tasks}
-          renderItem={({ item }) => <Habit item={item} />}
-          keyExtractor={item => item.id}
-          contentContainerStyle={styles.contentContainer}
-        />
-      )}
+      {tasks.length === 0 ? <NoHabits /> : <AllHabits tasks={tasks} />}
     </View>
+  );
+}
+
+function NoHabits() {
+  return (
+    <View style={styles.empty}>
+      <Text>
+        <Text>No recently completed recurring tasks found in Todoist.</Text>
+        <Text>{'\n\n'}</Text>
+        <Text>Make sure you've set your API token.</Text>
+        <Text>{'\n\n'}</Text>
+        <Text>Also, try closing and re-opening the app.</Text>
+      </Text>
+    </View>
+  )
+}
+
+interface AllHabitsProps {
+  tasks: PersistentTask[];
+}
+function AllHabits({ tasks }: AllHabitsProps) {
+  return (
+    <FlatList
+      data={tasks}
+      renderItem={({ item }) => <Habit item={item} />}
+      keyExtractor={item => item.id}
+      contentContainerStyle={styles.contentContainer}
+    />
   );
 }
 
