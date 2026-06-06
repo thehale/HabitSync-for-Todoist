@@ -37,14 +37,22 @@ interface AllHabitsProps {
 function AllHabits({ tasks }: AllHabitsProps) {
   const task = useRef<PersistentTask>(null);
 
+  const deleteDialog = useDialog({
+    task,
+    confirm: useCallback(() => task.current?.delete(), [task]),
+  });
   const ignoreDialog = useDialog({
     task,
     confirm: useCallback(() => task.current?.ignore(), [task]),
   });
 
   const renderItem = useCallback(({ item }: { item: PersistentTask }) => (
-    <Habit item={item} onRequestIgnore={ignoreDialog.request} />
-  ), [ignoreDialog]);
+    <Habit 
+      item={item} 
+      onRequestIgnore={ignoreDialog.request} 
+      onRequestDelete={deleteDialog.request}
+    />
+  ), [ignoreDialog, deleteDialog]);
   const keyExtractor = useCallback((item: PersistentTask) => item.id, []);
 
   return (
@@ -54,6 +62,11 @@ function AllHabits({ tasks }: AllHabitsProps) {
         renderItem={renderItem}
         keyExtractor={keyExtractor}
         contentContainerStyle={styles.contentContainer}
+      />
+      <DeleteDialog
+        visible={deleteDialog.visible}
+        onAccept={deleteDialog.confirm}
+        onDismiss={() => deleteDialog.setVisible(false)}
       />
       <IgnoreDialog
         visible={ignoreDialog.visible}
@@ -87,11 +100,11 @@ function useDialog({ task, confirm }: useDialogProps) {
 
 interface HabitProps {
   item: PersistentTask;
+  onRequestDelete: (item: PersistentTask) => void;
   onRequestIgnore: (item: PersistentTask) => void;
 }
-function Habit({ item, onRequestIgnore }: HabitProps) {
+function Habit({ item, onRequestIgnore, onRequestDelete }: HabitProps) {
   const [showMarkHabitDialog, setMarkHabitDialogVisible] = useState(false);
-  const [showDeleteDialog, setDeleteDialogVisible] = useState(false);
   const [showUnlinkDialog, setUnlinkDialogVisible] = useState(false);
   const [habit, setHabit] = useState<LoopHabit | undefined>(item.habit);
   const unlinkHabit = () => {
@@ -132,18 +145,13 @@ function Habit({ item, onRequestIgnore }: HabitProps) {
         content={content}
         actions={
           <Card.Actions>
-            <Button mode="text" intent="danger" onPress={() => setDeleteDialogVisible(true)}>Delete</Button>
+            <Button mode="text" intent="danger" onPress={() => onRequestDelete(item)}>Delete</Button>
             {!item.ignored && !item.habit && <Button mode="text" onPress={() => onRequestIgnore(item)}>Ignore</Button>}
             {habit && (<Button mode="text" intent="danger" onPress={() => setUnlinkDialogVisible(true)}>Unlink</Button>)}
             {habit && (<Button mode="tonal" onPress={() => setMarkHabitDialogVisible(true)}>Test</Button>)}
             {!habit && (<Button mode="contained" onPress={linkHabit}>Link</Button>)}
           </Card.Actions>
         }
-      />
-      <DeleteDialog
-        visible={showDeleteDialog}
-        onAccept={() => item.delete()}
-        onDismiss={() => setDeleteDialogVisible(false)}
       />
       <UnlinkHabitDialog
         visible={showUnlinkDialog}
