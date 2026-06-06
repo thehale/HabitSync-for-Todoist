@@ -2,7 +2,7 @@ import { LoopHabit, PersistentTask } from "../types";
 import { useApiKey, useTasks } from "./useStorage";
 
 import { queryTasks } from "../lib/Todoist";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 
 import { DAYS, SECONDS } from "../lib/time";
 
@@ -32,7 +32,7 @@ export function useTodoistTasks(since?: Date): PersistentTask[] {
     }
   }, [apiToken, buffer]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  return tasks.map(t => ({
+  return useMemo(() => tasks.map(t => ({
     ...t,
     setHabit: (habit?: LoopHabit) => {
       const newTasks = tasks.map(task => task.occurrenceId === t.occurrenceId ? { ...task, habit, ignored: false } : task);
@@ -46,5 +46,5 @@ export function useTodoistTasks(since?: Date): PersistentTask[] {
       const newTasks = tasks.map(task => task.occurrenceId === t.occurrenceId ? { ...task, habit: undefined, ignored: true } : task);
       setTasks(newTasks);
     }
-  }));
+  })), [tasks]);
 }
