@@ -1,5 +1,5 @@
 import { Alert, NativeModules, StyleSheet, View } from 'react-native';
-import { LoopHabit, PersistentTask } from '../types';
+import { PersistentTask } from '../types';
 import { useCallback, useMemo, useRef, useState } from 'react';
 
 import { Button, Card, Dialog, s, Text } from 'react-native-expressive';
@@ -135,34 +135,30 @@ interface HabitProps {
   onRequestMark: (item: PersistentTask) => void;
 }
 function Habit({ item, onRequestIgnore, onRequestDelete, onRequestUnlink, onRequestMark }: HabitProps) {
-  const [habit, setHabit] = useState<LoopHabit | undefined>(item.habit);
   const linkHabit = useCallback(async () => {
     try {
       const details = await LoopHabitModule.openHabitSelector();
-      const newHabit = {
+      item.setHabit({
         name: details.blurb,
         id: details.habit,
         action: details.action,
-      };
-      setHabit(newHabit);
-      item.setHabit(newHabit);
+      });
     } catch (e: any) {
       Alert.alert(e.message);
       console.log(JSON.stringify(e));
     }
   }, [item]);
-  const content = item.ignored ? 'IGNORED' : habit ? `Loop Habit > ${habit.name}` : null;
   return (
     <Card
       title={item.title}
-      content={content}
+      content={item.ignored ? 'IGNORED' : item.habit ? `Loop Habit > ${item.habit.name}` : null}
       actions={
         <Card.Actions>
           <Button mode="text" intent="danger" onPress={() => onRequestDelete(item)}>Delete</Button>
           {!item.ignored && !item.habit && <Button mode="text" onPress={() => onRequestIgnore(item)}>Ignore</Button>}
-          {habit && (<Button mode="text" intent="danger" onPress={() => onRequestUnlink(item)}>Unlink</Button>)}
-          {habit && (<Button mode="tonal" onPress={() => onRequestMark(item)}>Test</Button>)}
-          {!habit && (<Button mode="contained" onPress={linkHabit}>Link</Button>)}
+          {item.habit && (<Button mode="text" intent="danger" onPress={() => onRequestUnlink(item)}>Unlink</Button>)}
+          {item.habit && (<Button mode="tonal" onPress={() => onRequestMark(item)}>Test</Button>)}
+          {!item.habit && (<Button mode="contained" onPress={linkHabit}>Link</Button>)}
         </Card.Actions>
       }
     />
