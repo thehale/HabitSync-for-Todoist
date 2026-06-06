@@ -7,6 +7,32 @@ import { useTodoistTasks } from './useTodoistTasks';
 
 const { LoopHabitModule } = NativeModules;
 
+export default function HabitList() {
+  const tasks = useTodoistTasks();
+  return (
+    <View style={styles.container}>
+      {tasks.length === 0 ? (
+        <View style={styles.empty}>
+          <Text>
+            <Text>No recently completed recurring tasks found in Todoist.</Text>
+            <Text>{'\n\n'}</Text>
+            <Text>Make sure you've set your API token.</Text>
+            <Text>{'\n\n'}</Text>
+            <Text>Also, try closing and re-opening the app.</Text>
+          </Text>
+        </View>
+      ) : (
+        <FlatList
+          data={tasks}
+          renderItem={({ item }) => <Habit item={item} />}
+          keyExtractor={item => item.id}
+          contentContainerStyle={styles.contentContainer}
+        />
+      )}
+    </View>
+  );
+}
+
 interface HabitProps {
   item: PersistentTask;
 }
@@ -175,36 +201,8 @@ function MarkHabitDialog({ visible, onAccept, onDismiss }: MarkHabitDialogProps)
   );
 }
 
-function HabitList() {
-  const tasks = useTodoistTasks();
-  return (
-    <View style={styles.container}>
-      {tasks.length === 0 ? (
-        <View style={styles.empty}>
-          <Text>
-            <Text>No recently completed recurring tasks found in Todoist.</Text>
-            <Text>{'\n\n'}</Text>
-            <Text>Make sure you've set your API token.</Text>
-            <Text>{'\n\n'}</Text>
-            <Text>Also, try closing and re-opening the app.</Text>
-          </Text>
-        </View>
-      ) : (
-        <FlatList
-          data={tasks}
-          renderItem={({ item }) => <Habit item={item} />}
-          keyExtractor={item => item.id}
-          contentContainerStyle={styles.contentContainer}
-        />
-      )}
-    </View>
-  );
-}
-
 const styles = StyleSheet.create({
   container: { flex: 1 },
   contentContainer: { gap: s.space.default, padding: s.space.default },
   empty: { flex: 1, justifyContent: 'center', marginHorizontal: "10%" },
 });
-
-export default HabitList;
