@@ -12,6 +12,7 @@
     "update-icon": "react-native-svg-app-icon"
   },
   "dependencies": {
+    "@legendapp/list": "^3.0.2",
     "react": "19.2.3",
     "react-native": "0.85.1",
     "react-native-mmkv": "^3.3.1",

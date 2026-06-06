@@ -1,9 +1,10 @@
-import { Alert, FlatList, NativeModules, StyleSheet, View } from 'react-native';
+import { Alert, NativeModules, StyleSheet, View } from 'react-native';
 import { LoopHabit, PersistentTask } from '../types';
 import { useCallback, useState } from 'react';
 
 import { Button, Card, Dialog, s, Text } from 'react-native-expressive';
 import { useTodoistTasks } from './useTodoistTasks';
+import { LegendList } from '@legendapp/list/react-native';
 
 const { LoopHabitModule } = NativeModules;
 
@@ -37,7 +38,7 @@ function AllHabits({ tasks }: AllHabitsProps) {
   const renderItem = useCallback(({ item }: { item: PersistentTask }) => <Habit item={item} />, []);
   const keyExtractor = useCallback((item: PersistentTask) => item.id, []);
   return (
-    <FlatList
+    <LegendList
       data={tasks}
       renderItem={renderItem}
       keyExtractor={keyExtractor}
