@@ -13,6 +13,8 @@ import {
   MaterialBlue, MaterialCyan, MaterialGreen, MaterialOrange,
   MaterialPink, MaterialRed, MaterialYellow,
 } from "react-native-expressive";
+import { useThemeProduct } from "../lib/purchases/useThemeProduct";
+import { restorePurchases } from "../lib/purchases/revenuecat";
 
 const THEMES: MaterialThemeDefinition[] = [
   MaterialRed, MaterialOrange, MaterialYellow, MaterialGreen,
@@ -55,7 +57,8 @@ function ThemesDialog({ visible, onDismiss }: ThemesDialogProps) {
       }
       actions={
         <Dialog.Actions>
-          <Button onPress={onDismiss}>Close</Button>
+          <Button onPress={restorePurchases}>Restore Purchases</Button>
+          <Button mode="contained" onPress={onDismiss}>Close</Button>
         </Dialog.Actions>
       }
     />
@@ -78,23 +81,34 @@ function ThemeList() {
 }
 
 function ThemeRow({ item }: { item: MaterialThemeDefinition }) {
-  const { theme, setTheme } = useMaterialTheme();
-  const isActive = theme.name === item.name;
   return (
     <View style={styles.row}>
       <View style={styles.labelRow}>
         <View style={[styles.dot, { backgroundColor: item.light.primary }]} />
         <Text>{themeLabel(item)}</Text>
       </View>
-      <Button
-        mode={"text"}
-        disabled={isActive}
-        onPress={() => setTheme(item)}
-      >
-        {isActive ? "Active" : "Select"}
-      </Button>
+      <ThemeButton item={item} />
     </View>
   );
+}
+
+function ThemeButton({ item }: { item: MaterialThemeDefinition }) {
+  const { theme, setTheme } = useMaterialTheme();
+  const isCurrentTheme = theme.name === item.name;
+  const product = useThemeProduct(item);
+  return (
+    <Button
+      mode={"text"}
+      disabled={isCurrentTheme || (!product.entitled && !product.price)}
+      onPress={product.entitled ? () => setTheme(item) : product.purchase}
+    >
+      {
+        isCurrentTheme ? "Active" : 
+        product.entitled ? "Select" : 
+        product.price ?? "..."
+      }
+    </Button>
+  )
 }
 
 function themeLabel(t: MaterialThemeDefinition): string {

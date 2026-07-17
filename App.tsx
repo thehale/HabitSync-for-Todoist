@@ -5,9 +5,11 @@ import HabitList from './src/ui/HabitList';
 import React from 'react';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import Actions from './src/ui/Actions';
+import { initPurchases } from './src/lib/purchases/init';
 
 export default function App() {
   const { theme } = useMaterialTheme();
+  initPurchases();
   return (
     <SafeAreaProvider>
       <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
