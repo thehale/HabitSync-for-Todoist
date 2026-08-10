@@ -8,7 +8,7 @@ export function useThemeProduct(theme: MaterialThemeDefinition) {
   const [entitled, setEntitled] = useState(false);
   useEffect(() => {
     (async () => {
-      const isEntitled = await revenuecat.isEntitledTo(identifiers.entitlement);
+      const isEntitled = identifiers.free ?? await revenuecat.isEntitledTo(identifiers.entitlement);
       setEntitled(isEntitled);
     })();
   }, [theme.name]);
@@ -28,7 +28,7 @@ export function useThemeProduct(theme: MaterialThemeDefinition) {
   return { entitled, price, purchase };
 }
 
-const IDENTIFIERS: Record<string, { entitlement: string; product: string }> = {
+const IDENTIFIERS: Record<string, { entitlement: string; product: string; free?: boolean }> = {
   "material/red": {
     entitlement: "theme.material.red",
     product: "dev.jhale.todoisthabitsync.theme.material.red",
@@ -44,6 +44,7 @@ const IDENTIFIERS: Record<string, { entitlement: string; product: string }> = {
   "material/green": {
     entitlement: "theme.material.green",
     product: "dev.jhale.todoisthabitsync.theme.material.green",
+    free: true,
   },
   "material/blue": {
     entitlement: "theme.material.blue",
