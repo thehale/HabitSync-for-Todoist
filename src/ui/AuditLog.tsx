@@ -1,5 +1,6 @@
-import React from 'react';
-import { Pressable, ScrollView, Share, StyleSheet, View } from 'react-native';
+import React, { useCallback, useMemo } from 'react';
+import { Share, StyleSheet, View } from 'react-native';
+import { LegendList } from '@legendapp/list/react-native';
 import { Button, Divider, s, Text } from 'react-native-expressive';
 import { StructuredLog } from '../lib/lenador';
 import { humanSummary } from '../lib/history';
@@ -12,17 +13,23 @@ export default function AuditLog({ logs }: AuditLogProps) {
     return <Text>Nothing yet!</Text>;
   }
 
+  const reversedLogs = useMemo(() => [...logs].reverse(), [logs]);
+  const keyExtractor = useCallback((_: StructuredLog, index: number) => `${index}`, []);
+  const renderItem = useCallback(({ item, index }: { item: StructuredLog; index: number }) => (
+    <View style={styles.item}>
+      <LogEntry log={item} />
+      {/* {(index < reversedLogs.length - 1) && <Divider />} */}
+    </View>
+  ), [reversedLogs.length]);
+
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      <Pressable>
-        {logs.reverse().map((log, index) => (
-          <View key={index} style={styles.item}>
-            <LogEntry log={log} />
-            {(index < logs.length - 1) && <Divider />}
-          </View>
-        ))}
-      </Pressable>
-    </ScrollView>
+    <LegendList
+      style={styles.container}
+      data={reversedLogs}
+      renderItem={renderItem}
+      keyExtractor={keyExtractor}
+      contentContainerStyle={styles.contentContainer}
+    />
   );
 }
 
