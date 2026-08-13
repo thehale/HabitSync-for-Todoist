@@ -1,9 +1,12 @@
 import { NativeModules } from "react-native";
-import { Storage } from "../lib/Storage";
 import { queryTasks } from "../lib/Todoist"
 import { MINUTES } from "../lib/time";
 import { LOG, StructuredLog } from "../lib/lenador";
 import { Task } from "../types";
+import { init } from "../init";
+import { apiKeyStore } from "../values/ApiKey";
+import { lastSyncStore } from "../values/LastSync";
+import { tasksStore } from "../values/Tasks";
 
 const { LoopHabitModule } = NativeModules;
 
@@ -25,13 +28,14 @@ module.exports = async () => {
 }
 
 async function sync() {
+  init();
   const apiToken = getAPIKey();
-  const lastSync = Storage.LastSync.read();
+  const lastSync = lastSyncStore.getSnapshot();
   const queryDate = new Date(lastSync.getTime() - API_LAG_BUFFER);
 
   LOG.record({ lastSync: lastSync.toISOString(), queryDate: queryDate.toISOString() });
 
-  const storedTasks = Storage.Tasks.read()
+  const storedTasks = tasksStore.getSnapshot();
   const storedMap = new Map(storedTasks.map(t => [t.id, t]));
   if (__DEV__) {
     LOG.record({ storedTasks: redactTasks(storedTasks) });
@@ -46,12 +50,12 @@ async function sync() {
     .filter(([task, stored]) => ensureCompletedSinceLastSync(task, stored))
     .forEach(async ([task, stored]) => await recordHabitUpdate(task, stored.habit!.id, stored.habit!.action));
 
-  Storage.Tasks.write([...storedTasks, ...recentlyCompletedTasks]);
-  Storage.LastSync.write(new Date())
+  tasksStore.set([...storedTasks, ...recentlyCompletedTasks]);
+  lastSyncStore.set(new Date());
 }
 
 function getAPIKey(): string {
-  const apiKey = Storage.ApiKey.read();
+  const apiKey = apiKeyStore.getSnapshot();
   if (!apiKey) {
     throw new Error("API key not set");
   }

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View } from 'react-native';
 import { Button, Dialog } from 'react-native-expressive';
 import AuditLog from './AuditLog';
-import { useLogs } from './useStorage';
+import { useLogs } from '../values/Logs';
 import { requestSupport } from '../lib/support';
 
 export default function History() {
@@ -22,7 +22,7 @@ interface HistoryDialogProps {
 }
 
 function HistoryDialog({ visible, onDismiss }: HistoryDialogProps) {
-  const [logs] = useLogs();
+  const { logs } = useLogs();
 
     return (
     <Dialog

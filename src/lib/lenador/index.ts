@@ -4,8 +4,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-import { Storage } from "../Storage";
 import { Lenador, StructuredLog, StructuredValue } from "./lenador";
+import { logsStore } from "../../values/Logs";
 
 export type { StructuredLog, StructuredValue };
 
@@ -31,7 +31,10 @@ export const LOG = {
 		} finally {
 			logger.save((message) => {
 				console.debug(stringify(message));
-				Storage.Logs.add(message);
+				logsStore.append({ 
+					timestamp: new Date().toISOString(), 
+					...message 
+				})
 			});
 			logger = oldLogger;
 		}

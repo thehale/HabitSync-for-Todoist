@@ -1,5 +1,6 @@
 import { LoopHabit, PersistentTask } from "../types";
-import { useApiKey, useTasks } from "./useStorage";
+import { useApiKey } from "../values/ApiKey";
+import { useTasks } from "../values/Tasks"; 
 
 import { queryTasks } from "../lib/Todoist";
 import { useEffect, useMemo } from "react";
@@ -15,36 +16,36 @@ let DURATION_BETWEEN_API_CALLS = 10 * SECONDS;
 
 export function useTodoistTasks(since?: Date): PersistentTask[] {
   let sinceDate = since || defaultSinceDate();
-  const [tasks, setTasks] = useTasks();
-  const [apiToken] = useApiKey();
+  const { tasks, tasksStore } = useTasks();
+  const { apiKey } = useApiKey();
   const buffer = Math.floor(new Date().getTime() / DURATION_BETWEEN_API_CALLS);
 
   useEffect(() => {
     let timeToRefresh = LAST_API_CALL + DURATION_BETWEEN_API_CALLS < Date.now();
-    if (apiToken && timeToRefresh) {
-      queryTasks(apiToken, sinceDate).then(res => {
+    if (apiKey && timeToRefresh) {
+      queryTasks(apiKey, sinceDate).then(res => {
         const existingIds = new Set(tasks.map(t => t.id));
         const items = res.filter(i => !existingIds.has(i.id));
         const newItems = [...items, ...tasks].sort((a, b) => a.title.localeCompare(b.title));
-        setTasks(newItems);
+        tasksStore.set(newItems);
       })
         .catch(error => console.error(error));
     }
-  }, [apiToken, buffer]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [apiKey, buffer]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return useMemo(() => tasks.map(t => ({
     ...t,
     setHabit: (habit?: LoopHabit) => {
       const newTasks = tasks.map(task => task.occurrenceId === t.occurrenceId ? { ...task, habit, ignored: false } : task);
-      setTasks(newTasks);
+      tasksStore.set(newTasks);
     },
     delete: () => {
       const newTasks = tasks.filter(task => task.occurrenceId !== t.occurrenceId);
-      setTasks(newTasks);
+      tasksStore.set(newTasks);
     },
     ignore: () => {
       const newTasks = tasks.map(task => task.occurrenceId === t.occurrenceId ? { ...task, habit: undefined, ignored: true } : task);
-      setTasks(newTasks);
+      tasksStore.set(newTasks);
     }
   })), [tasks]);
 }

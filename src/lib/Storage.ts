@@ -44,20 +44,14 @@ export const Storage = {
       _storage.write(LAST_SYNC_DATE_STORAGE_ID, JSON.stringify(date))
   },
   Logs: {
-    add: (log: StructuredLog) => {
-      const now = new Date().toISOString();
-      const logs = Storage.Logs.read();
-
-      logs.push({ timestamp: now, ...log });
-
-      _storage.write(LOGS_STORAGE_ID, JSON.stringify(logs));
-    },
     read: (): StructuredLog[] => {
       const raw = _storage.read(LOGS_STORAGE_ID);
       const logs = (raw ? JSON.parse(raw) : []) as StructuredLog[];
       
       const cutoff = new Date(Date.now() - 48 * HOURS).toISOString();
       return logs.filter(entry => entry.timestamp > cutoff);
-    }
+    },
+    write: (logs: StructuredLog[]) => 
+      _storage.write(LOGS_STORAGE_ID, JSON.stringify(logs))
   }
 }

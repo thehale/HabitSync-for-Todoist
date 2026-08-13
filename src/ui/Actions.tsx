@@ -2,14 +2,19 @@ import { StyleSheet, View } from 'react-native';
 import ManualSync from './ManualSync';
 import History from './History';
 import Themes from './Themes';
-import { useApiKey } from './useStorage';
+import { useApiKey } from '../values/ApiKey';
 import TokenInput from './TokenInput';
 import { s } from 'react-native-expressive';
+import { useCallback } from 'react';
 
 export default function Actions() {
-  const [token, setToken] = useApiKey();
-  if (!token) {
-    return <TokenInput token={token} setToken={setToken} />;
+  const { apiKey, apiKeyStore } = useApiKey();
+  const setApiKey = useCallback((newKey: string) => {
+    apiKeyStore.set(newKey);
+  }, [apiKeyStore]);
+  
+  if (!apiKey) {
+    return <TokenInput token={apiKey} setToken={setApiKey} />;
   } else {
     return (
       <View style={styles.actions}>
@@ -17,7 +22,7 @@ export default function Actions() {
           <Themes />
         </View>
         <View style={styles.center}>
-          <ManualSync onDisable={() => setToken('')} />
+          <ManualSync onDisable={() => setApiKey('')} />
         </View>
         <View style={styles.right}>
           <History />
