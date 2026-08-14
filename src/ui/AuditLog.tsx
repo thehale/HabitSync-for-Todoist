@@ -21,7 +21,7 @@ export default function AuditLog({ logs }: AuditLogProps) {
 
   const reversedLogs = useMemo(() => [...logs].reverse(), [logs]);
   const keyExtractor = useCallback((_: StructuredLog, index: number) => `${index}`, []);
-  const renderItem = useCallback(({ item, index }: { item: StructuredLog; index: number }) => (
+  const renderItem = useCallback(({ item }: { item: StructuredLog; }) => (
     <View style={styles.item}>
       <LogEntry log={item} />
     </View>
