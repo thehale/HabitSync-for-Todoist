@@ -255,7 +255,7 @@ GEM
     nkf (0.3.0)
     optparse (0.8.1)
     os (1.1.4)
-    ostruct (0.6.3)
+    ostruct (0.6.0)
     plist (3.7.2)
     pp (0.6.4)
       prettyprint
@@ -338,10 +338,11 @@ DEPENDENCIES
   logger
   mutex_m
   nkf
+  ostruct (= 0.6.0)
   xcodeproj (< 1.26.0)
 
 RUBY VERSION
-   ruby 3.3.8p144
+  ruby 3.3.8p144
 
 BUNDLED WITH
-   2.5.22
+  4.0.18
