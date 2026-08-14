@@ -7,6 +7,7 @@
 import { LoopHabit, PersistentTask } from "../types";
 import { useApiKey } from "../values/ApiKey";
 import { useTasks } from "../values/Tasks"; 
+import { normalize } from "../lib/normalize";
 
 import { queryTasks } from "../lib/Todoist";
 import { useEffect, useMemo } from "react";
@@ -32,7 +33,7 @@ export function useTodoistTasks(since?: Date): PersistentTask[] {
       queryTasks(apiKey, sinceDate).then(res => {
         const existingIds = new Set(tasks.map(t => t.id));
         const items = res.filter(i => !existingIds.has(i.id));
-        const newItems = [...items, ...tasks].sort((a, b) => a.title.localeCompare(b.title));
+        const newItems = normalize([...items, ...tasks]);
         tasksStore.set(newItems);
       })
         .catch(error => console.error(error));
@@ -43,15 +44,15 @@ export function useTodoistTasks(since?: Date): PersistentTask[] {
     ...t,
     setHabit: (habit?: LoopHabit) => {
       const newTasks = tasks.map(task => task.occurrenceId === t.occurrenceId ? { ...task, habit, ignored: false } : task);
-      tasksStore.set(newTasks);
+      tasksStore.set(normalize(newTasks));
     },
     delete: () => {
       const newTasks = tasks.filter(task => task.occurrenceId !== t.occurrenceId);
-      tasksStore.set(newTasks);
+      tasksStore.set(normalize(newTasks));
     },
     ignore: () => {
       const newTasks = tasks.map(task => task.occurrenceId === t.occurrenceId ? { ...task, habit: undefined, ignored: true } : task);
-      tasksStore.set(newTasks);
+      tasksStore.set(normalize(newTasks));
     }
   })), [tasks, tasksStore]);
 }

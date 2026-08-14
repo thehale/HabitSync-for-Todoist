@@ -13,6 +13,7 @@ import { init } from "../init";
 import { apiKeyStore } from "../values/ApiKey";
 import { lastSyncStore } from "../values/LastSync";
 import { tasksStore } from "../values/Tasks";
+import { normalize } from "../lib/normalize";
 
 const { LoopHabitModule } = NativeModules;
 
@@ -56,7 +57,7 @@ async function sync() {
     .filter(([task, stored]) => ensureCompletedSinceLastSync(task, stored))
     .forEach(async ([task, stored]) => await recordHabitUpdate(task, stored.habit!.id, stored.habit!.action));
 
-  tasksStore.set([...storedTasks, ...recentlyCompletedTasks]);
+  tasksStore.set(normalize([...storedTasks, ...recentlyCompletedTasks]));
   lastSyncStore.set(new Date());
 }
 
