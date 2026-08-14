@@ -77,10 +77,11 @@ function ThemeList() {
 }
 
 function ThemeRow({ item }: { item: ThemeProduct }) {
+  const { theme: { scheme } } = useMaterialTheme();
   return (
     <View style={styles.row}>
       <View style={styles.labelRow}>
-        <View style={[styles.dot, { backgroundColor: item.themeDefinition.light.primary }]} />
+        <View style={[styles.dot, { backgroundColor: item.themeDefinition[scheme].primary }]} />
         <Text>{themeLabel(item.themeDefinition)}</Text>
       </View>
       <ThemeButton item={item} />
