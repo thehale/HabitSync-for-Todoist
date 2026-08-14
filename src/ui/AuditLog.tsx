@@ -7,7 +7,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { Share, StyleSheet, View } from 'react-native';
 import { LegendList } from '@legendapp/list/react-native';
-import { Button, Divider, s, Text } from 'react-native-expressive';
+import { Button, s, Text } from 'react-native-expressive';
 import { StructuredLog } from '../lib/lenador';
 import { humanSummary } from '../lib/history';
 
@@ -24,7 +24,6 @@ export default function AuditLog({ logs }: AuditLogProps) {
   const renderItem = useCallback(({ item, index }: { item: StructuredLog; index: number }) => (
     <View style={styles.item}>
       <LogEntry log={item} />
-      {/* {(index < reversedLogs.length - 1) && <Divider />} */}
     </View>
   ), [reversedLogs.length]);
 
