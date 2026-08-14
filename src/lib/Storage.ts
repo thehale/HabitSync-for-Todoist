@@ -1,9 +1,11 @@
 import { MMKV } from "react-native-mmkv";
+import type { ColorScheme } from "react-native-expressive";
+import { PRODUCTS } from "./purchases/products";
+import type { ThemeProduct } from "./purchases/ThemeProduct";
 import { Task } from "../types";
 import { HOURS } from "./time";
 import { StructuredLog } from "./lenador";
 import { normalize } from "./normalize";
-
 const mmkv = new MMKV();
 const _storage = {
   keys: () => mmkv.getAllKeys(),
@@ -18,6 +20,8 @@ const API_KEY_STORAGE_ID = 'todoist.apiKey'
 const TASKS_STORAGE_ID = 'todoist.tasks'
 const LAST_SYNC_DATE_STORAGE_ID = 'todoist.lastSync'
 const LOGS_STORAGE_ID = 'logs.history'
+const THEME_STORAGE_ID = 'theme.material'
+const SCHEME_STORAGE_ID = 'theme.scheme'
 
 
 export const Storage = {
@@ -53,5 +57,15 @@ export const Storage = {
     },
     write: (logs: StructuredLog[]) => 
       _storage.write(LOGS_STORAGE_ID, JSON.stringify(logs))
+  },
+  ThemeProduct: {
+    read: (): ThemeProduct | undefined =>
+      PRODUCTS.find(t => t.themeDefinition.name === _storage.read(THEME_STORAGE_ID)),
+    write: (product: ThemeProduct) => _storage.write(THEME_STORAGE_ID, product.themeDefinition.name),
+  },
+  Scheme: {
+    read: (): ColorScheme =>
+      (_storage.read(SCHEME_STORAGE_ID) as ColorScheme | undefined) ?? 'system',
+    write: (scheme: ColorScheme) => _storage.write(SCHEME_STORAGE_ID, scheme),
   }
 }

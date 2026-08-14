@@ -8,18 +8,14 @@ import { StyleSheet, View } from "react-native";
 import { useCallback, useState } from "react";
 import { LegendList } from "@legendapp/list/react-native";
 import {
-  Button, Dialog, Divider, Segment, Segmented, Text, s,
-  type ColorScheme, type MaterialThemeDefinition, useMaterialTheme,
-  MaterialBlue, MaterialCyan, MaterialGreen, MaterialOrange,
-  MaterialPink, MaterialRed, MaterialYellow,
+  Button, Dialog, Divider, Segment, Segmented, Text,
+  s, useMaterialTheme,
+  type ColorScheme, type MaterialThemeDefinition,
 } from "react-native-expressive";
-import { useThemeProduct } from "../lib/purchases/useThemeProduct";
+import { useAsyncState } from "../lib/hooks/useAsyncState";
 import { restorePurchases } from "../lib/purchases/revenuecat";
-
-const THEMES: MaterialThemeDefinition[] = [
-  MaterialRed, MaterialOrange, MaterialYellow, MaterialGreen,
-  MaterialBlue, MaterialCyan, MaterialPink,
-];
+import { PRODUCTS } from "../lib/purchases/products";
+import type { ThemeProduct } from "../lib/purchases/ThemeProduct";
 
 export default function Themes() {
   const [showThemesDialog, setThemesDialogVisible] = useState(false);
@@ -39,14 +35,14 @@ interface ThemesDialogProps {
   onDismiss: () => void;
 }
 function ThemesDialog({ visible, onDismiss }: ThemesDialogProps) {
-  const { scheme, setScheme } = useMaterialTheme()
+  const { scheme, setScheme } = useMaterialTheme();
   return (
     <Dialog visible={visible} onDismiss={onDismiss}
       content={
         <View style={styles.content}>
           <Segmented
             value={scheme}
-            onChange={(value) => { console.log(Date.now(), "ThemesDialog onChange", value); setScheme(value as ColorScheme); }}
+            onChange={(value) => setScheme(value as ColorScheme)}
           >
             <Segment value="light">Light</Segment>
             <Segment value="system">System</Segment>
@@ -67,11 +63,11 @@ function ThemesDialog({ visible, onDismiss }: ThemesDialogProps) {
 
 function ThemeList() {
   const separator = useCallback(() => <Divider />, []);
-  const renderItem = useCallback(({ item }: { item: MaterialThemeDefinition }) => <ThemeRow item={item} />, []);
-  const keyExtractor = useCallback((item: MaterialThemeDefinition) => item.name, []);
+  const renderItem = useCallback(({ item }: { item: ThemeProduct }) => <ThemeRow item={item} />, []);
+  const keyExtractor = useCallback((item: ThemeProduct) => item.themeDefinition.name, []);
   return (
     <LegendList
-      data={THEMES}
+      data={PRODUCTS}
       renderItem={renderItem}
       keyExtractor={keyExtractor}
       ItemSeparatorComponent={separator}
@@ -80,32 +76,43 @@ function ThemeList() {
   )
 }
 
-function ThemeRow({ item }: { item: MaterialThemeDefinition }) {
+function ThemeRow({ item }: { item: ThemeProduct }) {
   return (
     <View style={styles.row}>
       <View style={styles.labelRow}>
-        <View style={[styles.dot, { backgroundColor: item.light.primary }]} />
-        <Text>{themeLabel(item)}</Text>
+        <View style={[styles.dot, { backgroundColor: item.themeDefinition.light.primary }]} />
+        <Text>{themeLabel(item.themeDefinition)}</Text>
       </View>
       <ThemeButton item={item} />
     </View>
   );
 }
 
-function ThemeButton({ item }: { item: MaterialThemeDefinition }) {
-  const { theme, setTheme } = useMaterialTheme();
-  const isCurrentTheme = theme.name === item.name;
-  const product = useThemeProduct(item);
+function ThemeButton({ item }: { item: ThemeProduct }) {
+  const { theme, setThemeDefinition } = useMaterialTheme();
+  const isCurrentTheme = theme.name === item.themeDefinition.name;
+  
+  const entitled = useAsyncState(false, async () => item.isEntitled(), [item.themeDefinition.name]);
+  const price = useAsyncState<string | null>(null, async () => item.price(), [item.themeDefinition.name]);
+  
+  const selectTheme = useCallback(() => {
+    setThemeDefinition(item.themeDefinition);
+  }, [item.themeDefinition, setThemeDefinition]);
+  const purchase = useCallback(async () => {
+    await item.purchase();
+    setThemeDefinition(item.themeDefinition);
+  }, [item.themeDefinition.name, setThemeDefinition]);
+
   return (
     <Button
       mode={"text"}
-      disabled={isCurrentTheme || (!product.entitled && !product.price)}
-      onPress={product.entitled ? () => setTheme(item) : product.purchase}
+      disabled={isCurrentTheme || (!entitled && !price)}
+      onPress={entitled ? selectTheme : purchase}
     >
       {
         isCurrentTheme ? "Active" : 
-        product.entitled ? "Select" : 
-        product.price ?? "..."
+        entitled ? "Select" : 
+        price ?? "..."
       }
     </Button>
   )

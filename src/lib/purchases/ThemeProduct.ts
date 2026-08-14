@@ -5,13 +5,16 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 import * as revenuecat from "./revenuecat";
+import type { MaterialThemeDefinition } from "react-native-expressive";
 
 export class ThemeProduct {
+  themeDefinition: MaterialThemeDefinition;
   entitlement: string;
   product: string;
   free?: boolean;
 
-  constructor({entitlement, product, free}: {entitlement: string, product: string, free?: boolean}) {
+  constructor({themeDefinition, entitlement, product, free}: {themeDefinition: MaterialThemeDefinition, entitlement: string, product: string, free?: boolean}) {
+    this.themeDefinition = themeDefinition;
     this.entitlement = entitlement;
     this.product = product;
     this.free = free;
