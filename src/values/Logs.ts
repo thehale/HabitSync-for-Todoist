@@ -19,6 +19,6 @@ export function initializeLogs() {
 export { store as logsStore }
 
 export function useLogs() {
-	const { value, store } = useList();
-	return { logs: value, logsStore: store };
+	const { value: logs, store: logsStore } = useList();
+	return { logs, logsStore };
 }

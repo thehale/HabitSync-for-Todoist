@@ -18,6 +18,6 @@ export function initializeApiKey() {
 export { store as apiKeyStore }
 
 export function useApiKey() {
-	const { value, store } = useValue();
-	return { apiKey: value, apiKeyStore: store };
+	const { value: apiKey, store: apiKeyStore } = useValue();
+	return { apiKey, apiKeyStore };
 };

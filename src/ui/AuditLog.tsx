@@ -17,16 +17,20 @@ interface AuditLogProps {
 export default function AuditLog({ logs }: AuditLogProps) {
   if (logs.length === 0) {
     return <Text>Nothing yet!</Text>;
+  } else {
+    return <LogList logs={logs} />;
   }
+}
 
+function LogList({ logs }: { logs: StructuredLog[] }) {
   const reversedLogs = useMemo(() => [...logs].reverse(), [logs]);
   const keyExtractor = useCallback((_: StructuredLog, index: number) => `${index}`, []);
   const renderItem = useCallback(({ item }: { item: StructuredLog; }) => (
     <View style={styles.item}>
       <LogEntry log={item} />
     </View>
-  ), [reversedLogs.length]);
-
+  ), []);
+  
   return (
     <LegendList
       style={styles.container}

@@ -6,10 +6,10 @@
 
 import { useEffect, useState } from "react";
 
-export function useAsyncState<T>(defaultValue: T, fn: () => Promise<T>, deps: any[] = []) {
+export function useAsyncState<T>(defaultValue: T, fn: () => Promise<T>) {
   const [state, setState] = useState<T>(defaultValue);
   useEffect(() => {
     (async () => setState(await fn()))();
-  }, deps);
+  }, [fn]);
   return state;
 }

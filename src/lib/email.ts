@@ -30,7 +30,7 @@ async function sendEmail(recipient: string, subject: string, body: string) {
 			const url = mailto(recipient, subject, body.slice(0, limit));
 			await Linking.openURL(url);
 			noEmailSent = false;
-		} catch (error) {
+		} catch (_) {
 			attempts++;
 		}
 	}

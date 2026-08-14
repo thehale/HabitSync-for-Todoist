@@ -53,5 +53,5 @@ export function useTodoistTasks(since?: Date): PersistentTask[] {
       const newTasks = tasks.map(task => task.occurrenceId === t.occurrenceId ? { ...task, habit: undefined, ignored: true } : task);
       tasksStore.set(newTasks);
     }
-  })), [tasks]);
+  })), [tasks, tasksStore]);
 }

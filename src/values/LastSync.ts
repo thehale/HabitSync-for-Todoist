@@ -18,6 +18,6 @@ export function initializeLastSync() {
 export { store as lastSyncStore}
 
 export function useLastSync() {
-	const { value, store } = useValue();
-	return { lastSync: value, lastSyncStore: store };
+	const { value: lastSync, store: lastSyncStore } = useValue();
+	return { lastSync, lastSyncStore };
 }

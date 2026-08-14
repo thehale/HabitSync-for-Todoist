@@ -92,9 +92,12 @@ function ThemeRow({ item }: { item: ThemeProduct }) {
 function ThemeButton({ item }: { item: ThemeProduct }) {
   const { theme, setThemeDefinition } = useMaterialTheme();
   const isCurrentTheme = theme.name === item.themeDefinition.name;
-  
-  const entitled = useAsyncState(false, async () => item.isEntitled(), [item.themeDefinition.name]);
-  const price = useAsyncState<string | null>(null, async () => item.price(), [item.themeDefinition.name]);
+
+  const resolveEntitled = useCallback(async () => item.isEntitled(), [item]);
+  const entitled = useAsyncState(false, resolveEntitled);
+
+  const resolvePrice = useCallback(async () => item.price(), [item]);
+  const price = useAsyncState<string | null>(null, resolvePrice);
   
   const selectTheme = useCallback(() => {
     setThemeDefinition(item.themeDefinition);
@@ -102,7 +105,7 @@ function ThemeButton({ item }: { item: ThemeProduct }) {
   const purchase = useCallback(async () => {
     await item.purchase();
     setThemeDefinition(item.themeDefinition);
-  }, [item.themeDefinition.name, setThemeDefinition]);
+  }, [item, setThemeDefinition]);
 
   return (
     <Button

@@ -9,13 +9,13 @@ import { Storage } from "../lib/Storage";
 import { DEFAULT_PRODUCT, PRODUCTS } from "../lib/purchases/products";
 
 export function initializeTheme() {
-  void (async () => {
+  (async () => {
     loadScheme();
     await loadTheme();
   })();
 
   materialThemeStore.subscribe(() => {
-    void (async () => {
+    (async () => {
       await persistTheme();
       persistScheme();
     })();

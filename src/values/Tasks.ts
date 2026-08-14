@@ -16,9 +16,9 @@ export function initializeTasks() {
 	store.subscribe(listener);
 }
 
-export { store as tasksStore} 
+export { store as tasksStore }; 
 
 export function useTasks() {
-	const { store } = useList();
-	return { tasks: Storage.Tasks.read(), tasksStore: store };
+	const { value: tasks, store: tasksStore } = useList();
+	return { tasks, tasksStore };
 }
